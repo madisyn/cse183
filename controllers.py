@@ -46,7 +46,7 @@ def index():
     if get_username() is None:
         redirect(URL('signup'))
     return dict(
-        # TODO
+        username=get_username(),
     )
 
 @action('signup')
