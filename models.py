@@ -10,15 +10,23 @@ from pydal.validators import *
 def get_user_email():
     return auth.current_user.get('email') if auth.current_user else None
 
+def get_user():
+    return auth.current_user.get('id') if auth.current_user else None
+
 def get_time():
     return datetime.datetime.utcnow()
 
-
 ### Define your table below
 #
-# db.define_table('thing', Field('name')) 
+# db.define_table('thing', Field('name'))
 #
 ## always commit your models to avoid problems later
+
+db.define_table(
+    'user_profiles',
+    Field('user', 'reference auth_user', default=get_user),
+    Field('username', 'text'),
+)
 
 db.define_table(
     'location',
@@ -29,7 +37,6 @@ db.define_table(
     Field('date_location_found', 'datetime'),
     Field('overall_rating', 'integer'),
 )
-
 
 db.define_table(
     'weep_reviews',
@@ -50,16 +57,5 @@ db.define_table(
     Field('date_review_posted', 'reference user_profiles', 'reference weep_reviews', 'datetime', ondelete="CASCADE"),
     Field('number_of_reviews', 'integer'),
 )
-
-db.define_table(
-    'user_profiles',
-    Field('user', 'reference auth_user'),
-    Field('user_name', 'text'),
-)
-db.user_profiles.Name.requires = IS_NOT_EMPTY()
-db.user_profiles.Email.requires = IS_NOT_EMPTY()
-db.user_profiles.user_id.requires = IS_NOT_EMPTY()
-
-
 
 db.commit()
