@@ -13,6 +13,11 @@ def get_user_email():
 def get_user():
     return auth.current_user.get('id') if auth.current_user else None
 
+def get_username():
+    user = get_user()
+    user_row = db(db.user_profiles.user == user).select().first()
+    return user_row.username if user_row else None
+
 def get_time():
     return datetime.datetime.utcnow()
 

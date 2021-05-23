@@ -29,7 +29,7 @@ from py4web import action, request, abort, redirect, URL
 from yatl.helpers import A
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 from py4web.utils.url_signer import URLSigner
-from .models import get_user_email
+from .models import get_user_email, get_username
 
 from py4web.utils.form import Form, FormStyleBulma
 from .common import Field
@@ -43,6 +43,8 @@ url_signer = URLSigner(session)
 def index():
     if get_user_email() is None:
         redirect(URL('auth/login'))
+    if get_username() is None:
+        redirect(URL('signup'))
     return dict(
         # TODO
     )
@@ -50,11 +52,6 @@ def index():
 @action('signup')
 @action.uses(db, auth, 'signup.html')
 def signup():
-    return dict()
-
-@action('login')
-@action.uses(db, auth, 'login.html')
-def login():
     return dict()
 
 # API FUNCTIONS ----------------------------------------------------------
@@ -65,12 +62,7 @@ def login():
 @action.uses(url_signer.verify(), db, auth)
 def add_user():
     # called when user signs up
-    return dict()
-
-@action('login_user')
-@action.uses(url_signer.verify(), db, auth)
-def login_user():
-    # called when user logs in
+    # add the username to user_profiles
     return dict()
 
 # LOCATION
