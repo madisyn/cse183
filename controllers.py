@@ -62,71 +62,73 @@ def edit(location_id=None):
         redirect(URL('index'))
     return dict(form=form)
 
-@action('add_review/<location_Title:int>', method=["GET", "POST"])
+@action('add_review/<location_title:int>', method=["GET", "POST"])
 @action.uses(db, session, auth.user, 'add_review.html')
-def add_review(Title=None):
-    assert Title is not None
-    name = db.location[Title]
-    data = db(db.Location.Title == Title)
+def add_review(title=None):
+    assert title is not None
+    name = db.location[title]
+    data = db(db.Location.title == title)
     assert data is not None
     form = Form([Field('Noise Rating'), Field('People Rating'), Field('Atmosphere Rating'),
-    Field('Cry Rating'), Field('Comments'), Field('Images'),],
+    Field('Cry Rating'), Field('Comments'),],
                 csrf_session=session,
                 formstyle=FormStyleBulma                
                 )
     if form.accepted:
         db.weep_reviews.insert(
-            Title = Title,
+            title = title,
             review_id = db.user_profiles.user_id,
             noise_rating = form.vars['Noise Rating'],
             people_rating = form.vars['People Rating'],
             atmosphere_rating = form.vars['Atmosphere Rating'],
-            cry_rating = form.vars['phone'],
+            cry_rating = form.vars['Cry Rating'],
             additional_comments = form.vars['Comments'],
-            images = form.vars['Images']
         )
         redirect(URL('index'))
     return dict(form=form, name=name)
 
 
-@action('edit_review/<location_Title:int>/<review_id:int>', method=["GET", "POST"])
+@action('edit_review/<location_title:int>/<review_id:int>', method=["GET", "POST"])
 @action.uses(db, session, auth.user, url_signer.verify(), 'edit_review.html')
-def edit_review(location_Title=None, review_id=None, Title=None):
-    assert location_Title is not None
+def edit_review(location_title=None, review_id=None, title=None):
+    assert location_title is not None
     assert review_id is not None
-    assert Title is not None
+    assert title is not None
     p = db(
         (db.review.id == review_id) &
-        (db.location.Title == location_Title) &
+        (db.location.title == location_title) &
         (db.weep_review.review_id == db.user_profiles.user_id)
         ).select().first()
     if p is None:
         redirect(URL('index'))
-    name = db.location[Title]
+    name = db.location[title]
     form = Form([Field('Noise Rating'), Field('People Rating'), Field('Atmosphere Rating'),
-    Field('Cry Rating'), Field('Comments'), Field('Images'),],
+    Field('Cry Rating'), Field('Comments'),],
             record=dict(noise=p.weep_reviews.noise_rating, people=p.weep_reviews.people_rating,
             atmosphere=p.weep_reviews.atmosphere_rating, cry=p.weep_reviews.cry_rating,
-            acomments=p.weep_reviews.additional_comments, image=p.weep_reviews.images), 
+            acomments=p.weep_reviews.additional_comments,), 
             deletable=False, 
             csrf_session=session, 
             formstyle=FormStyleBulma)
     if form.accepted:
-        p.weep_reviews.update_record(noise_rating = form.vars['Noise Rating'], people_rating = form.vars['People Rating'],
-        atmosphere_rating = form.vars['Atmosphere Rating'], cry_rating = form.vars['Cry Rating'],
-        additional_comments = form.vars['Comments'], images = form.vars['Images'],)
+        p.weep_reviews.update_record(
+        noise_rating = form.vars['Noise Rating'], 
+        people_rating = form.vars['People Rating'],
+        atmosphere_rating = form.vars['Atmosphere Rating'], 
+        cry_rating = form.vars['Cry Rating'],
+        additional_comments = form.vars['Comments'],)
         redirect(URL('index'))
     return dict(form=form, name=name)
 
-@action('delete_review/<location_Title:int>/<review_id:int>', method=["GET", "POST"])
+@action('delete_review/<location_title:int>/<review_id:int>', method=["GET", "POST"])
 @action.uses(db, session, auth.user, url_signer.verify())
-def edit_phone(Title=None, review_id=None):
-    assert Title is not None
+def edit_phone(title=None, review_id=None):
+    assert title is not None
     assert review_id is not None
     p = db(
         (db.review.id == review_id) &
-        (db.Title.id == Title) &
-        (db.weep_reviews.review_id == Title)
+        (db.title.id == title) &
+        (db.weep_reviews.review_id == title)
         ).select().first()
     if p is None:
         redirect(URL('index'))
