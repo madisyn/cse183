@@ -1,4 +1,4 @@
-timestamp: 2021-04-28T21:17:45.251647
+timestamp: 2021-05-23T13:59:30.978657
 CREATE TABLE "py4web_session"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "rkey" CHAR(512),
@@ -8,7 +8,7 @@ CREATE TABLE "py4web_session"(
     "expires_on" TIMESTAMP
 );
 success!
-timestamp: 2021-04-28T21:17:45.261005
+timestamp: 2021-05-23T13:59:30.982863
 CREATE TABLE "auth_user"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "email" CHAR(512) UNIQUE,
@@ -21,26 +21,47 @@ CREATE TABLE "auth_user"(
     "past_passwords_hash" TEXT
 );
 success!
-timestamp: 2021-04-28T21:17:45.267651
+timestamp: 2021-05-23T13:59:30.985643
 CREATE TABLE "auth_user_tag_groups"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "path" CHAR(512),
     "record_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  
 );
 success!
-timestamp: 2021-05-01T19:49:52.025976
-CREATE TABLE "contact"(
+timestamp: 2021-05-23T15:08:10.976286
+CREATE TABLE "user_profiles"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
-    "first_name" CHAR(512),
-    "last_name" CHAR(512),
-    "user_email" CHAR(512)
+    "user" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "username" TEXT
 );
 success!
-timestamp: 2021-05-01T19:49:52.035948
-CREATE TABLE "phone"(
+timestamp: 2021-05-23T15:08:10.984104
+CREATE TABLE "location"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
-    "contact_id" INTEGER REFERENCES "contact" ("id") ON DELETE CASCADE  ,
-    "phone_number" CHAR(512),
-    "phone_name" CHAR(512)
+    "title" TEXT,
+    "x_coordinate" INTEGER,
+    "y_coordinate" INTEGER,
+    "date_location_found" TIMESTAMP,
+    "overall_rating" INTEGER
+);
+success!
+timestamp: 2021-05-23T15:08:10.986523
+CREATE TABLE "weep_reviews"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "review_id" INTEGER REFERENCES "location" ("id") ON DELETE CASCADE  ,
+    "noise_rating" INTEGER,
+    "people_rating" INTEGER,
+    "atmosphere_rating" INTEGER,
+    "cry_rating" INTEGER,
+    "additional_comments" TEXT,
+    "helpful_count" INTEGER,
+    "date_review_posted" CHAR(512)
+);
+success!
+timestamp: 2021-05-23T15:08:10.989404
+CREATE TABLE "student_reviews"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "date_review_posted" INTEGER REFERENCES "user_profiles" ("id") ON DELETE CASCADE  ,
+    "number_of_reviews" INTEGER
 );
 success!

@@ -1,0 +1,53 @@
+[[extend 'layout.html']]
+
+<style>
+    [v-cloak] {
+        display: none;
+    }
+
+    .center-container {
+        text-align: center;
+    }
+
+    .login {
+        max-width: 500px;
+    }
+
+    .login .field.center-buttons {
+        justify-content: center;
+    }
+
+    .btn-login-su {
+        width: 100%;
+    }
+</style>
+
+
+<div class="section" id="vue-target" v-cloak>
+    <div class="container login is-max-desktop center-container">
+        <div class="content">
+            <h1>weep</h1>
+        </div>
+        <div class="field">
+            <p class="control has-icons-left has-icons-right">
+                <input class="input" type="text" placeholder="Username">
+                <span class="icon is-small is-left">
+                    <i class="fa fa-user"></i>
+                </span>
+            </p>
+        </div>
+        <div class="field center-buttons">
+            <div class="control">
+                <button class="button is-info btn-login-su">Sign Up</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+[[block page_scripts]]
+<!-- Loads the index-specific js for Vue -->
+<script>
+</script>
+<script src="js/index.js"></script>
+[[end]]
