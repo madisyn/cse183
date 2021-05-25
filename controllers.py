@@ -31,9 +31,6 @@ from .common import db, session, T, cache, auth, logger, authenticated, unauthen
 from py4web.utils.url_signer import URLSigner
 from .models import get_user_email, get_username
 
-from py4web.utils.form import Form, FormStyleBulma
-from .common import Field
-
 url_signer = URLSigner(session)
 
 # SERVING PAGES ----------------------------------------------------------
@@ -43,8 +40,8 @@ url_signer = URLSigner(session)
 def index():
     if get_user_email() is None:
         redirect(URL('auth/login'))
-    if get_username() is None:
-        redirect(URL('signup'))
+    # if get_username() is None:
+    #     redirect(URL('signup'))
     return dict(
         username=get_username(),
     )
