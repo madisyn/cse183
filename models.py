@@ -35,11 +35,12 @@ db.define_table(
 
 db.define_table(
     'location',
-    Field('title', 'text'),
+    Field('name', 'text'),
     Field('decription', 'text'),
     # Field('x_coordinate', 'integer'),
     # Field('y_coordinate', 'integer'),
     Field('date_posted', 'datetime', default=get_time),
+    Field('author', 'reference user_profiles'),
     # Field('overall_rating', 'integer'),
 )
 
@@ -54,6 +55,7 @@ db.define_table(
     #Field('images', Field('image', 'upload', default='path/to/file')), Unit 18 storing files in google storage
     Field('helpful_count', 'integer', default=0),
     Field('date_posted', default=get_time),
+    Field('author', 'reference auth_user', default=get_user),
 )
 
 #might keep

@@ -64,14 +64,14 @@ def add_user():
 
 # LOCATION
 
-# @action('add_location', method=["GET", "POST"])
-# @action.uses(db, session, auth.user, 'add_location.html')
-# def add():
-#     form = Form(db.location, csrf_session=session, formstyle=FormStyleBulma)
-#     if form.accepted:
-#         redirect(URL('index'))
-#     return dict(form=form)
-
+@action('add_location', method="POST")
+@action.uses(url_signer.verify(), db, auth)
+def add_post():
+    id = db.location.insert(
+        name=request.json.get('name'),
+        description=request.json.get('description'),
+    )
+    return dict(id=id)
 
 # @action('edit/<location_id:int>', method=["GET", "POST"])
 # @action.uses(db, session, auth.user, url_signer.verify(), 'edit.html')
