@@ -40,8 +40,8 @@ url_signer = URLSigner(session)
 def index():
     if get_user_email() is None:
         redirect(URL('auth/login'))
-    # if get_username() is None:
-    #     redirect(URL('signup'))
+    if get_username() is None:
+        redirect(URL('signup'))
     return dict(
         get_email_url = URL('get_email', signer=url_signer),
         add_location_url = URL('add_location', signer=url_signer),
