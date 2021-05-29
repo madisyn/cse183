@@ -38,6 +38,7 @@ db.define_table(
     Field('name', 'string'),
     Field('description', 'string'),
     Field('date_posted', 'datetime', default=get_time),
+    Field('email', 'string'),
     # foreign key constraints aren't working
     # Field('author', 'reference auth_user'),
 )

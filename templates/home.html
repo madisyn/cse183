@@ -182,7 +182,12 @@ p.review-preview {
                 <div class="card-stacked">
                     <div class="card-content">
                         <div class="content">
-                            <h2>{{p.name}}</h2>
+                            <div class="columns" style="margin-bottom: 0rem;">
+                                <h2 class="column is-11" style="margin-bottom: 0.25rem;">{{p.name}}</h2>\
+                                <span class="column is-1 has-text-danger" v-if="user_email==p.email">
+                                    <i class="fa fa-trash fa-lg" @click="delete_post(p._idx)" style="cursor: pointer;"></i>
+                                </span>
+                            </div>
                             <div class="rating">
                                 <span class="icon has-text-link"><i class="fa fa-circle fa-lg"></i></span>
                                 <span class="icon has-text-link"><i class="fa fa-circle fa-lg"></i></span>
@@ -224,15 +229,16 @@ p.review-preview {
                 </div>
             </div>
         </div>
-        
     </div>
 </div>
 
 [[block page_scripts]]
 <!-- Loads the index-specific js for Vue -->
 <script>
-    let add_location_url = "[[=XML(add_location_url)]]"
-    let get_location_url = "[[=XML(get_location_url)]]"
+    let get_email_url = "[[=XML(get_email_url)]]";
+    let add_location_url = "[[=XML(add_location_url)]]";
+    let get_location_url = "[[=XML(get_location_url)]]";
+    let delete_location_url = "[[=XML(delete_location_url)]]";
 </script>
 <script src="js/index.js"></script>
 [[end]]

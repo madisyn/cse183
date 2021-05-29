@@ -43,9 +43,10 @@ def index():
     # if get_username() is None:
     #     redirect(URL('signup'))
     return dict(
-        username=get_username(),
+        get_email_url = URL('get_email', signer=url_signer),
         add_location_url = URL('add_location', signer=url_signer),
         get_location_url = URL('get_location', signer=url_signer),
+        delete_location_url = URL('delete_location', signer=url_signer),
     )
 
 @action('signup')
@@ -64,6 +65,11 @@ def add_user():
     # add the username to user_profiles
     return dict()
 
+@action('get_email')
+@action.uses(url_signer.verify(), db, auth)
+def get_email():
+    return dict(email=get_user_email())
+
 # LOCATION
 
 @action('add_location', method="POST")
@@ -73,6 +79,7 @@ def add_location():
     id = db.location.insert(
         name=request.json.get('name'),
         description=request.json.get('description'),
+        email=get_user_email(),
     )
     return dict(id=id)
 
@@ -81,6 +88,14 @@ def add_location():
 def get_location():
     posts = db(db.location).select().as_list()
     return dict(posts=posts)
+
+@action('delete_location')
+@action.uses(url_signer.verify(), db, auth)
+def delete_location():
+    id = request.params.get('id')
+    assert id is not None
+    db(db.location.id == id).delete()
+    return "ok"
 
 # @action('edit/<location_id:int>', method=["GET", "POST"])
 # @action.uses(db, session, auth.user, url_signer.verify(), 'edit.html')
