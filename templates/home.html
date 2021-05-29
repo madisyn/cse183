@@ -167,6 +167,10 @@ p.review-preview {
             </div>
         </div>
 
+        <div class="content" v-if="posts.length == 0">
+            <i>No posts to show</i>
+        </div>
+
         <!-- cards -->
         <div v-for="p in posts">
             <div class="card is-horizontal location-card">
