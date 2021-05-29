@@ -42,25 +42,18 @@ db.define_table(
     # Field('author', 'reference auth_user'),
 )
 
-# db.define_table(
-#     'weep_reviews',
-#     Field('location', 'reference location', ondelete="CASCADE"),
-#     Field('noise_rating', 'integer', requires=IS_INT_IN_RANGE(0, 5)),
-#     Field('people_rating', 'integer', requires=IS_INT_IN_RANGE(0, 5)),
-#     Field('atmosphere_rating', 'integer', requires=IS_INT_IN_RANGE(0, 5)),
-#     Field('cry_rating', 'integer', requires=IS_INT_IN_RANGE(0, 5)),
-#     Field('comment', 'text'),
-#     #Field('images', Field('image', 'upload', default='path/to/file')), Unit 18 storing files in google storage
-#     Field('helpful_count', 'integer', default=0),
-#     Field('date_posted', default=get_time),
-#     Field('author', 'reference auth_user', default=get_user),
-# )
-
-#might keep
-# db.define_table(
-#     'student_reviews',
-#     Field('date_review_posted', 'reference user_profiles', 'reference weep_reviews', 'datetime', ondelete="CASCADE"),
-#     Field('number_of_reviews', 'integer'),
-# )
+db.define_table(
+    'weep_reviews',
+    Field('location', 'reference location', ondelete="CASCADE"),
+    Field('noise_rating', 'integer', requires=IS_INT_IN_RANGE(0, 5)),
+    Field('people_rating', 'integer', requires=IS_INT_IN_RANGE(0, 5)),
+    Field('atmosphere_rating', 'integer', requires=IS_INT_IN_RANGE(0, 5)),
+    Field('cry_rating', 'integer', requires=IS_INT_IN_RANGE(0, 5)),
+    Field('comment', 'string'),
+    #Field('images', Field('image', 'upload', default='path/to/file')), Unit 18 storing files in google storage
+    Field('helpful_count', 'integer', default=0),
+    Field('date_posted', default=get_time),
+    Field('author', 'reference auth_user', default=get_user),
+)
 
 db.commit()

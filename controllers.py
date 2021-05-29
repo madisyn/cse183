@@ -69,13 +69,10 @@ def add_user():
 @action('add_location', method="POST")
 @action.uses(url_signer.verify(), db, auth)
 def add_location():
-    print(get_user_email())
-    print(request.json)
-    print(get_user())
+    # TODO: adding an author to posts isn't working (foreign key bug)
     id = db.location.insert(
         name=request.json.get('name'),
         description=request.json.get('description'),
-        author=1,
     )
     return dict(id=id)
 
