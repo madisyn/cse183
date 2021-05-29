@@ -63,6 +63,7 @@ p.review-preview {
 
 .location-card {
     margin-top: 1.5rem;
+    cursor: pointer
 }
 
 </style>
@@ -173,7 +174,7 @@ p.review-preview {
 
         <!-- cards -->
         <div v-for="p in posts">
-            <div class="card is-horizontal location-card">
+            <div class="card is-horizontal location-card" @click="open_location(p.id)">
                 <div class="card-image">
                     <figure class="image is-square">
                     <img src="https://images7.alphacoders.com/303/303995.jpg" alt="Placeholder image">

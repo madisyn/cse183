@@ -43,6 +43,7 @@ def index():
     # if get_username() is None:
     #     redirect(URL('signup'))
     return dict(
+        signer=url_signer,
         get_email_url = URL('get_email', signer=url_signer),
         add_location_url = URL('add_location', signer=url_signer),
         get_location_url = URL('get_location', signer=url_signer),
@@ -53,6 +54,12 @@ def index():
 @action.uses(db, auth, 'signup.html')
 def signup():
     return dict()
+
+@action('location/<location_id:int>')
+@action.uses(url_signer, db, auth)
+def location():
+    assert location_id is not None
+
 
 # API FUNCTIONS ----------------------------------------------------------
 

@@ -67,6 +67,10 @@ let init = (app) => {
         });
     }
 
+    app.open_location = function (post_id) {
+        // TODO
+    }
+
     // We form the dictionary of all methods, so we can assign them
     // to the Vue app in a single blow.
     app.methods = {
@@ -74,6 +78,7 @@ let init = (app) => {
         set_add_modal: app.set_add_modal,
         add_post: app.add_post,
         delete_post: app.delete_post,
+        open_location: app.open_location,
     };
 
     // This creates the Vue instance.
