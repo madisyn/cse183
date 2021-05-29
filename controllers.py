@@ -29,7 +29,7 @@ from py4web import action, request, abort, redirect, URL
 from yatl.helpers import A
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 from py4web.utils.url_signer import URLSigner
-from .models import get_user_email, get_username
+from .models import get_user_email, get_username, get_user
 
 url_signer = URLSigner(session)
 
@@ -44,6 +44,8 @@ def index():
     #     redirect(URL('signup'))
     return dict(
         username=get_username(),
+        add_location_url = URL('add_location', signer=url_signer),
+        get_location_url = URL('get_location', signer=url_signer),
     )
 
 @action('signup')
@@ -66,12 +68,22 @@ def add_user():
 
 @action('add_location', method="POST")
 @action.uses(url_signer.verify(), db, auth)
-def add_post():
+def add_location():
+    print(get_user_email())
+    print(request.json)
+    print(get_user())
     id = db.location.insert(
         name=request.json.get('name'),
         description=request.json.get('description'),
+        author=1,
     )
     return dict(id=id)
+
+@action('get_location', method="GET")
+@action.uses(url_signer.verify(), db, auth)
+def get_location():
+    posts = db(db.location).select().as_list()
+    return dict(posts=posts)
 
 # @action('edit/<location_id:int>', method=["GET", "POST"])
 # @action.uses(db, session, auth.user, url_signer.verify(), 'edit.html')
