@@ -71,10 +71,79 @@ p.review-preview {
 
     <div class="container is-max-desktop">
         <!-- create button -->
-        <button class="button is-info is-wide">
+        <button class="button is-info is-wide" @click="set_add_modal()">
             <span class="icon"><i class="fa fa-plus-circle"></i></span>
             <span>Create a Post</span>
         </button>
+
+        <!-- create modal -->
+        <div id="modal" class="modal" v-bind:class="{ 'is-active': show_add_modal }">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Add Location</p>
+                    <button class="delete" aria-label="close" @click="set_add_modal()"></button>
+                </header>
+                <section class="modal-card-body">
+                    <div class="content">
+                        <div class="field">
+                            <label class="label">Name</label>
+                            <div class="control">
+                                <input class="input" type="text" placeholder="Name here..." v-model="location_name">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <label class="label">Description</label>
+                                <input class="input" type="text" placeholder="Description here..." v-model="location_desc">
+                            </div>
+                        </div>
+                        <!-- TODO: adding a new review along with the new location -->
+                        <!-- <div class="field">
+                            <div class="control">
+                                <label class="label">Your Review</label>
+                                <textarea class="textarea" placeholder="Your review here..."></textarea>
+                            </div>
+                        </div> -->
+                        <!-- <div class="field">
+                            <div class="control">
+                                <label class="label">Noise Rating</label>
+                                <span @mouseout="noise_rating_out()">
+                                    <span @mouseover="noise_rating_over(img._idx, star_idx)"
+                                          @click="set_stars(img._idx, star_idx)"
+                                          v-for="star_idx in [1, 2, 3, 4, 5]">
+                                        <i v-if="star_idx <= img.num_stars_display" class="fa fa-circle"></i>
+                                        <i v-if="star_idx > img.num_stars_display" class="fa fa-circle-o"></i>
+                                    </span>
+                                </span>
+                            </div>
+                        </div> -->
+                        <!-- <div class="field">
+                            <div class="control">
+                                <label class="label">People Rating</label>
+                                <input class="input" type="text" placeholder="Rating out of 5...">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <label class="label">Atmosphere Rating</label>
+                                <input class="input" type="text" placeholder="Rating out of 5...">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <label class="label">Cry Rating</label>
+                                <input class="input" type="text" placeholder="Rating out of 5...">
+                            </div>
+                        </div> -->
+                    </div>
+                </section>
+                <footer class="modal-card-foot">
+                    <button class="button is-success" @click="add_post()">Add Post</button>
+                    <button class="button">Cancel</button>
+                </footer>
+            </div>
+        </div>
 
         <!-- filters -->
         <div class="columns row field is-grouped">
@@ -98,64 +167,78 @@ p.review-preview {
             </div>
         </div>
 
+        <div class="content" v-if="posts.length == 0">
+            <i>No posts to show</i>
+        </div>
+
         <!-- cards -->
-        <div class="card is-horizontal location-card">
-            <div class="card-image">
-                <figure class="image is-square">
-                <img src="https://images7.alphacoders.com/303/303995.jpg" alt="Placeholder image">
-                </figure>
-            </div>
-            <div class="card-stacked">
-                <div class="card-content">
-                    <div class="content">
-                        <h2>Location Name</h2>
-                        <div class="rating">
-                            <span class="icon has-text-link"><i class="fa fa-circle fa-lg"></i></span>
-                            <span class="icon has-text-link"><i class="fa fa-circle fa-lg"></i></span>
-                            <span class="icon has-text-link"><i class="fa fa-circle fa-lg"></i></span>
-                            <span class="icon has-text-link"><i class="fa fa-circle fa-lg"></i></span>
-                            <span class="icon has-text-link"><i class="fa fa-circle-o fa-lg"></i></span>
-                            <span class="review-count has-text-grey-dark">23</span>
-                        </div>
-                        <p class="review-preview">"Curabitur accumsan turpis pharetra augue tincidunt blandit. Quisque condimentum maximus mi, sit amet commodo arcu rutrum id."</p>
-                    </div>
-                    <div class="field is-grouped">
-                        <div class="control">
-                            <span class="tag is-light is-rounded">example tag</span>
-                        </div>
-                        <div class="control">
-                            <span class="tag is-light is-rounded">example tag</span>
-                        </div>
-                        <div class="control">
-                            <span class="tag is-light is-rounded">example tag</span>
-                        </div>
-                    </div>
+        <div v-for="p in posts">
+            <div class="card is-horizontal location-card">
+                <div class="card-image">
+                    <figure class="image is-square">
+                    <img src="https://images7.alphacoders.com/303/303995.jpg" alt="Placeholder image">
+                    </figure>
                 </div>
-                <footer class="card-footer">
-                    <div class="card-footer-item has-text-right">
-                        <div v-if="!upvoted">
-                            <span class="icon">20</span>
-                            <span class="upvote" @click="set_upvote(true)">
-                                <i class="fa fa-angle-up fa-lg"></i>
-                            </span>
+                <div class="card-stacked">
+                    <div class="card-content">
+                        <div class="content">
+                            <div class="columns" style="margin-bottom: 0rem;">
+                                <h2 class="column is-11" style="margin-bottom: 0.25rem;">{{p.name}}</h2>\
+                                <span class="column is-1 has-text-danger" v-if="user_email==p.email">
+                                    <i class="fa fa-trash fa-lg" @click="delete_post(p._idx)" style="cursor: pointer;"></i>
+                                </span>
+                            </div>
+                            <div class="rating">
+                                <span class="icon has-text-link"><i class="fa fa-circle fa-lg"></i></span>
+                                <span class="icon has-text-link"><i class="fa fa-circle fa-lg"></i></span>
+                                <span class="icon has-text-link"><i class="fa fa-circle fa-lg"></i></span>
+                                <span class="icon has-text-link"><i class="fa fa-circle fa-lg"></i></span>
+                                <span class="icon has-text-link"><i class="fa fa-circle-o fa-lg"></i></span>
+                                <span class="review-count has-text-grey-dark">23</span>
+                            </div>
+                            <p class="review-preview">{{p.description}}</p>
                         </div>
-                        <div v-if="upvoted">
-                            <span class="icon has-text-info">20</span>
-                            <span class="upvote has-text-info" @click="set_upvote(false)">
-                                <i class="fa fa-angle-up fa-lg"></i>
-                            </span>
+                        <div class="field is-grouped">
+                            <div class="control">
+                                <span class="tag is-light is-rounded">example tag</span>
+                            </div>
+                            <div class="control">
+                                <span class="tag is-light is-rounded">example tag</span>
+                            </div>
+                            <div class="control">
+                                <span class="tag is-light is-rounded">example tag</span>
+                            </div>
                         </div>
                     </div>
-                </footer>
+                    <footer class="card-footer">
+                        <div class="card-footer-item has-text-right">
+                            <div v-if="!upvoted">
+                                <span class="icon">20</span>
+                                <span class="upvote" @click="set_upvote(true)">
+                                    <i class="fa fa-angle-up fa-lg"></i>
+                                </span>
+                            </div>
+                            <div v-if="upvoted">
+                                <span class="icon has-text-info">20</span>
+                                <span class="upvote has-text-info" @click="set_upvote(false)">
+                                    <i class="fa fa-angle-up fa-lg"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
             </div>
         </div>
-        
     </div>
 </div>
 
 [[block page_scripts]]
 <!-- Loads the index-specific js for Vue -->
 <script>
+    let get_email_url = "[[=XML(get_email_url)]]";
+    let add_location_url = "[[=XML(add_location_url)]]";
+    let get_location_url = "[[=XML(get_location_url)]]";
+    let delete_location_url = "[[=XML(delete_location_url)]]";
 </script>
 <script src="js/index.js"></script>
 [[end]]

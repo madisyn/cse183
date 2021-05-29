@@ -35,32 +35,26 @@ db.define_table(
 
 db.define_table(
     'location',
-    Field('title', 'text'),
-    #Field('location_decription', 'text'),
-    Field('x_coordinate', 'integer'),
-    Field('y_coordinate', 'integer'),
-    Field('date_location_found', 'datetime'),
-    Field('overall_rating', 'integer'),
+    Field('name', 'string'),
+    Field('description', 'string'),
+    Field('date_posted', 'datetime', default=get_time),
+    Field('email', 'string'),
+    # foreign key constraints aren't working
+    # Field('author', 'reference auth_user'),
 )
 
 db.define_table(
     'weep_reviews',
-    Field('review_id', 'reference location', ondelete="CASCADE"),
-    Field('noise_rating', 'integer'),
-    Field('people_rating', 'integer'),
-    Field('atmosphere_rating', 'integer'),
-    Field('cry_rating', 'integer'),
-    Field('additional_comments', 'text'),
+    Field('location', 'reference location', ondelete="CASCADE"),
+    Field('noise_rating', 'integer', requires=IS_INT_IN_RANGE(0, 5)),
+    Field('people_rating', 'integer', requires=IS_INT_IN_RANGE(0, 5)),
+    Field('atmosphere_rating', 'integer', requires=IS_INT_IN_RANGE(0, 5)),
+    Field('cry_rating', 'integer', requires=IS_INT_IN_RANGE(0, 5)),
+    Field('comment', 'string'),
     #Field('images', Field('image', 'upload', default='path/to/file')), Unit 18 storing files in google storage
-    Field('helpful_count', 'integer'),
-    Field('date_review_posted'),
-)
-
-#might keep
-db.define_table(
-    'student_reviews',
-    Field('date_review_posted', 'reference user_profiles', 'reference weep_reviews', 'datetime', ondelete="CASCADE"),
-    Field('number_of_reviews', 'integer'),
+    Field('helpful_count', 'integer', default=0),
+    Field('date_posted', default=get_time),
+    Field('author', 'reference auth_user', default=get_user),
 )
 
 db.commit()

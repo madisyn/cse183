@@ -29,10 +29,7 @@ from py4web import action, request, abort, redirect, URL
 from yatl.helpers import A
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 from py4web.utils.url_signer import URLSigner
-from .models import get_user_email, get_username
-
-from py4web.utils.form import Form, FormStyleBulma
-from .common import Field
+from .models import get_user_email, get_username, get_user
 
 url_signer = URLSigner(session)
 
@@ -43,10 +40,13 @@ url_signer = URLSigner(session)
 def index():
     if get_user_email() is None:
         redirect(URL('auth/login'))
-    if get_username() is None:
-        redirect(URL('signup'))
+    # if get_username() is None:
+    #     redirect(URL('signup'))
     return dict(
-        username=get_username(),
+        get_email_url = URL('get_email', signer=url_signer),
+        add_location_url = URL('add_location', signer=url_signer),
+        get_location_url = URL('get_location', signer=url_signer),
+        delete_location_url = URL('delete_location', signer=url_signer),
     )
 
 @action('signup')
@@ -65,16 +65,37 @@ def add_user():
     # add the username to user_profiles
     return dict()
 
+@action('get_email')
+@action.uses(url_signer.verify(), db, auth)
+def get_email():
+    return dict(email=get_user_email())
+
 # LOCATION
 
-# @action('add_location', method=["GET", "POST"])
-# @action.uses(db, session, auth.user, 'add_location.html')
-# def add():
-#     form = Form(db.location, csrf_session=session, formstyle=FormStyleBulma)
-#     if form.accepted:
-#         redirect(URL('index'))
-#     return dict(form=form)
+@action('add_location', method="POST")
+@action.uses(url_signer.verify(), db, auth)
+def add_location():
+    # TODO: adding an author to posts isn't working (foreign key bug)
+    id = db.location.insert(
+        name=request.json.get('name'),
+        description=request.json.get('description'),
+        email=get_user_email(),
+    )
+    return dict(id=id)
 
+@action('get_location', method="GET")
+@action.uses(url_signer.verify(), db, auth)
+def get_location():
+    posts = db(db.location).select().as_list()
+    return dict(posts=posts)
+
+@action('delete_location')
+@action.uses(url_signer.verify(), db, auth)
+def delete_location():
+    id = request.params.get('id')
+    assert id is not None
+    db(db.location.id == id).delete()
+    return "ok"
 
 # @action('edit/<location_id:int>', method=["GET", "POST"])
 # @action.uses(db, session, auth.user, url_signer.verify(), 'edit.html')
