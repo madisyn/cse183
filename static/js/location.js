@@ -9,6 +9,10 @@ let init = (app) => {
     // This is the Vue data.
     app.data = {
         loc_id: 0,
+        user_email: "",
+        name: "",
+        description: "",
+        poster: "",
     };
 
     app.enumerate = (a) => {
@@ -37,6 +41,14 @@ let init = (app) => {
     // For the moment, we 'load' the data from a string.
     app.init = () => {
         app.vue.loc_id = loc_id;
+        axios.get(get_email_url).then(function (response) {
+            app.vue.user_email = response.data.email;
+        });
+        axios.get(get_location_url, {params: {loc_id: loc_id}}).then(function (response) {
+            app.vue.name = response.data.name;
+            app.vue.description = response.data.description;
+            app.vue.poster = response.data.email;
+        });
     };
 
     // Call to the initializer.

@@ -62,6 +62,7 @@ def location(loc_id=None):
     assert loc_id is not None
     return dict(
         loc_id=loc_id,
+        get_email_url = URL('get_email', signer=url_signer),
         get_location_url = URL('get_location', signer=url_signer),
     )
 
@@ -92,8 +93,8 @@ def get_locations():
 @action('get_location', method="GET")
 @action.uses(url_signer.verify(), db, auth)
 def get_location():
-    loc_id = request.json.get("loc_id")
-    location = db(db.location.id == loc_id).select().first()
+    loc_id = request.params.get("loc_id")
+    location = db(db.location.id == loc_id).select().as_list()[0]
     return dict(location=location)
 
 @action('add_location', method="POST")
