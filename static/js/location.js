@@ -8,7 +8,7 @@ let init = (app) => {
 
     // This is the Vue data.
     app.data = {
-        // TODO
+        loc_id: 0,
     };
 
     app.enumerate = (a) => {
@@ -36,7 +36,7 @@ let init = (app) => {
     // load the data.
     // For the moment, we 'load' the data from a string.
     app.init = () => {
-        // TODO
+        app.vue.loc_id = loc_id;
     };
 
     // Call to the initializer.

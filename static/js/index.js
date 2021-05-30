@@ -96,7 +96,7 @@ let init = (app) => {
         axios.get(get_email_url).then(function (response) {
             app.vue.user_email = response.data.email;
         })
-        axios.get(get_location_url).then(function (response) {
+        axios.get(get_locations_url).then(function (response) {
             app.vue.posts = app.enumerate(response.data.posts);
         });
     };

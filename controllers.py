@@ -46,7 +46,7 @@ def index():
         signer=url_signer,
         get_email_url = URL('get_email', signer=url_signer),
         add_location_url = URL('add_location', signer=url_signer),
-        get_location_url = URL('get_location', signer=url_signer),
+        get_locations_url = URL('get_locations', signer=url_signer),
         delete_location_url = URL('delete_location', signer=url_signer),
         location_url = URL('location'),
     )
@@ -59,13 +59,10 @@ def signup():
 @action('location/<loc_id:int>')
 @action.uses(url_signer, db, auth, 'location.html')
 def location(loc_id=None):
+    assert loc_id is not None
     return dict(
         loc_id=loc_id,
-        signer=url_signer,
-        get_email_url = URL('get_email', signer=url_signer),
-        add_location_url = URL('add_location', signer=url_signer),
         get_location_url = URL('get_location', signer=url_signer),
-        delete_location_url = URL('delete_location', signer=url_signer),
     )
 
 # API FUNCTIONS ----------------------------------------------------------
@@ -86,6 +83,19 @@ def get_email():
 
 # LOCATION
 
+@action('get_locations', method="GET")
+@action.uses(url_signer.verify(), db, auth)
+def get_locations():
+    posts = db(db.location).select().as_list()
+    return dict(posts=posts)
+
+@action('get_location', method="GET")
+@action.uses(url_signer.verify(), db, auth)
+def get_location():
+    loc_id = request.json.get("loc_id")
+    location = db(db.location.id == loc_id).select().first()
+    return dict(location=location)
+
 @action('add_location', method="POST")
 @action.uses(url_signer.verify(), db, auth)
 def add_location():
@@ -96,12 +106,6 @@ def add_location():
         email=get_user_email(),
     )
     return dict(id=id)
-
-@action('get_location', method="GET")
-@action.uses(url_signer.verify(), db, auth)
-def get_location():
-    posts = db(db.location).select().as_list()
-    return dict(posts=posts)
 
 @action('delete_location')
 @action.uses(url_signer.verify(), db, auth)
