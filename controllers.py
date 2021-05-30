@@ -48,6 +48,7 @@ def index():
         add_location_url = URL('add_location', signer=url_signer),
         get_location_url = URL('get_location', signer=url_signer),
         delete_location_url = URL('delete_location', signer=url_signer),
+        location_url = URL('location'),
     )
 
 @action('signup')
@@ -55,11 +56,17 @@ def index():
 def signup():
     return dict()
 
-@action('location/<location_id:int>')
-@action.uses(url_signer, db, auth)
-def location():
-    assert location_id is not None
-
+@action('location/<loc_id:int>')
+@action.uses(url_signer, db, auth, 'location.html')
+def location(loc_id=None):
+    return dict(
+        loc_id=loc_id,
+        signer=url_signer,
+        get_email_url = URL('get_email', signer=url_signer),
+        add_location_url = URL('add_location', signer=url_signer),
+        get_location_url = URL('get_location', signer=url_signer),
+        delete_location_url = URL('delete_location', signer=url_signer),
+    )
 
 # API FUNCTIONS ----------------------------------------------------------
 

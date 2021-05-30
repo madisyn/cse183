@@ -174,7 +174,7 @@ p.review-preview {
 
         <!-- cards -->
         <div v-for="p in posts">
-            <div class="card is-horizontal location-card" @click="open_location(p.id)">
+            <div class="card is-horizontal location-card" @click="open_location(this, p.id)" >
                 <div class="card-image">
                     <figure class="image is-square">
                     <img src="https://images7.alphacoders.com/303/303995.jpg" alt="Placeholder image">
@@ -230,6 +230,7 @@ p.review-preview {
                 </div>
             </div>
         </div>
+        
     </div>
 </div>
 
@@ -240,6 +241,7 @@ p.review-preview {
     let add_location_url = "[[=XML(add_location_url)]]";
     let get_location_url = "[[=XML(get_location_url)]]";
     let delete_location_url = "[[=XML(delete_location_url)]]";
+    let location_url = "[[=XML(location_url)]]"
 </script>
 <script src="js/index.js"></script>
 [[end]]

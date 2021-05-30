@@ -1,0 +1,25 @@
+[[extend 'layout.html']]
+
+<style>
+[v-cloak] {
+     display: none;
+}
+</style>
+
+<div class="section" id="vue-location" v-cloak>
+
+    <div class="container is-max-desktop">
+        <div class="content">
+            <p>Hello world.</p>
+            <p>[[=loc_id]]</p>
+        </div>
+    </div>
+</div>
+
+[[block page_scripts]]
+<!-- Loads the index-specific js for Vue -->
+<script>
+
+</script>
+<script src="js/location.js"></script>
+[[end]]

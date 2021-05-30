@@ -67,8 +67,8 @@ let init = (app) => {
         });
     }
 
-    app.open_location = function (post_id) {
-        // TODO
+    app.open_location = function (object, post_id) {
+        object.location.href = location_url + '/' + post_id;
     }
 
     // We form the dictionary of all methods, so we can assign them
