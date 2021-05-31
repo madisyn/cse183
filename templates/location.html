@@ -9,12 +9,24 @@
 <div class="section" id="vue-location" v-cloak>
 
     <div class="container is-max-desktop">
-        <div class="content">
-            <p>Hello world.</p>
-            <p>[[=loc_id]]</p>
-            <p>{{loc_id}}</p>
-        </div>
+        <!-- Title -->
+        <section class="hero is-medium is-link">
+            <div class="hero-body">
+                <div class="content">
+                    <h2 class="has-text-white">{{name}}</h2>
+                    <div class="rating">
+                        <span class="icon has-text-white"><i class="fa fa-circle fa-lg"></i></span>
+                        <span class="icon has-text-white"><i class="fa fa-circle fa-lg"></i></span>
+                        <span class="icon has-text-white"><i class="fa fa-circle fa-lg"></i></span>
+                        <span class="icon has-text-white"><i class="fa fa-circle fa-lg"></i></span>
+                        <span class="icon has-text-white"><i class="fa fa-circle-o fa-lg"></i></span>
+                        <span class="review-count has-text-white">23</span>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
+    
 </div>
 
 [[block page_scripts]]

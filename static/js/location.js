@@ -45,9 +45,9 @@ let init = (app) => {
             app.vue.user_email = response.data.email;
         });
         axios.get(get_location_url, {params: {loc_id: loc_id}}).then(function (response) {
-            app.vue.name = response.data.name;
-            app.vue.description = response.data.description;
-            app.vue.poster = response.data.email;
+            app.vue.name = response.data.location.name;
+            app.vue.description = response.data.location.description;
+            app.vue.poster = response.data.location.email;
         });
     };
 
