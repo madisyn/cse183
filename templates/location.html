@@ -4,27 +4,164 @@
 [v-cloak] {
      display: none;
 }
+
+.hero.is-medium .location-header-body {
+    padding-bottom: 1.5rem;
+}
+
+.hero.is-medium.location-header {
+    margin-bottom: 2rem;
+}
+
+.is-wide {
+    width: 100%;
+}
+
+.row {
+    margin-top: .5rem;
+}
+
+.rating-title {
+    font-weight: 600;
+}
+
 </style>
 
 <div class="section" id="vue-location" v-cloak>
 
     <div class="container is-max-desktop">
-        <!-- Title -->
-        <section class="hero is-medium is-link">
-            <div class="hero-body">
+
+        <!-- title -->
+        <section class="hero is-medium is-link location-header">
+            <div class="hero-body location-header-body">
                 <div class="content">
                     <h2 class="has-text-white">{{name}}</h2>
                     <div class="rating">
-                        <span class="icon has-text-white"><i class="fa fa-circle fa-lg"></i></span>
-                        <span class="icon has-text-white"><i class="fa fa-circle fa-lg"></i></span>
-                        <span class="icon has-text-white"><i class="fa fa-circle fa-lg"></i></span>
-                        <span class="icon has-text-white"><i class="fa fa-circle fa-lg"></i></span>
-                        <span class="icon has-text-white"><i class="fa fa-circle-o fa-lg"></i></span>
+                        <span class="icon has-text-white" v-for="star_idx in [1, 2, 3, 4, 5]">
+                            <i v-if="star_idx <= 4" class="fa fa-circle fa-lg"></i>
+                            <i v-if="star_idx > 4" class="fa fa-circle-o fa-lg"></i>
+                        </span>
                         <span class="review-count has-text-white">23</span>
                     </div>
                 </div>
             </div>
         </section>
+
+        <!-- create button -->
+        <button class="button is-info is-wide" @click="set_add_modal()">
+            <span class="icon"><i class="fa fa-plus-circle"></i></span>
+            <span>Add a Review</span>
+        </button>
+
+        <!-- filters -->
+        <div class="columns row field is-grouped">
+            <div class="control column">
+                <button class="button is-info is-light is-wide">
+                    <span class="icon"><i class="fa fa-check"></i></span>
+                    <span>Top</span>
+                </button>
+            </div>
+            <div class="control column">
+                <button class="button is-info is-light is-wide">
+                    <span class="icon"><i class="fa fa-exclamation"></i></span>
+                    <span>New</span>
+                </button>
+            </div>
+            <div class="control column">
+                <button class="button is-info is-light is-wide">
+                    <span class="icon"><i class="fa fa-arrow-up"></i></span>
+                    <span>Rising</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- placeholder for reviews -->
+        <!-- <div class="content" v-if="reviews.length == 0">
+            <i>No posts to show</i>
+        </div> -->
+
+        <!-- review card -->
+        <div class="card">
+            <div class="card-content">
+                <div class="media">
+                    <div class="media-left">
+                        <figure class="image is-48x48">
+                            <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
+                        </figure>
+                    </div>
+                    <div class="media-content">
+                        <p class="title is-4">johnsmith</p>
+                        <p class="subtitle is-6">00/00/00</p>
+                    </div>
+                </div>
+                <div class="content">
+                    <div class="columns">
+                        <div class="column is-3">
+                            <div class="rating-title" style="margin-bottom: .25rem;">
+                                <i>Overall Cry Quality</i>
+                            </div>
+                            <div class="rating">
+                                <span class="icon has-text-link" v-for="star_idx in [1, 2, 3, 4, 5]">
+                                    <i v-if="star_idx <= 4" class="fa fa-circle fa-lg"></i>
+                                    <i v-if="star_idx > 4" class="fa fa-circle-o fa-lg"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="column is-3">
+                            <div class="rating-title" style="margin-bottom: .25rem;">
+                                <i>Atmosphere</i>
+                            </div>
+                            <div class="rating">
+                                <span class="icon has-text-link" v-for="star_idx in [1, 2, 3, 4, 5]">
+                                    <i v-if="star_idx <= 4" class="fa fa-circle fa-lg"></i>
+                                    <i v-if="star_idx > 4" class="fa fa-circle-o fa-lg"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="column is-3">
+                            <div class="rating-title" style="margin-bottom: .25rem;">
+                                <i>Noise Level</i>
+                            </div>
+                            <div class="rating">
+                                <span class="icon has-text-link" v-for="star_idx in [1, 2, 3, 4, 5]">
+                                    <i v-if="star_idx <= 4" class="fa fa-circle fa-lg"></i>
+                                    <i v-if="star_idx > 4" class="fa fa-circle-o fa-lg"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="column is-3">
+                            <div class="rating-title" style="margin-bottom: .25rem;">
+                                <i>Amount of People</i>
+                            </div>
+                            <div class="rating">
+                                <span class="icon has-text-link" v-for="star_idx in [1, 2, 3, 4, 5]">
+                                    <i v-if="star_idx <= 4" class="fa fa-circle fa-lg"></i>
+                                    <i v-if="star_idx > 4" class="fa fa-circle-o fa-lg"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="review-content">Lorem ipsum leo risus, porta ac consectetur ac, vestibulum at eros. Donec id elit non mi porta gravida at eget metus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras mattis consectetur purus sit amet fermentum.</p>
+                </div>
+            </div>
+            <footer class="card-footer">
+                <div class="card-footer-item has-text-right">
+                    <div v-if="!upvoted">
+                        <span class="icon upvote">
+                            <i class="fa fa-angle-up fa-lg"></i>
+                        </span>
+                        <span>Helpful (10)</span>
+                    </div>
+                    <div v-if="upvoted">
+                        <span class="upvote has-text-info icon">
+                            <i class="fa fa-angle-up fa-lg"></i>
+                        </span>
+                        <span class="has-text-info">Helpful (10)</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+
     </div>
     
 </div>

@@ -13,6 +13,8 @@ let init = (app) => {
         name: "",
         description: "",
         poster: "",
+        reviews: [],
+        upvoted: true,
     };
 
     app.enumerate = (a) => {

@@ -8,7 +8,6 @@ let init = (app) => {
 
     // This is the Vue data.
     app.data = {
-        upvoted: false,
         user_email: "",
         show_add_modal: false,
         location_name: "",
@@ -22,10 +21,6 @@ let init = (app) => {
         a.map((e) => {e._idx = k++;});
         return a;
     };
-
-    app.set_upvote = function (status) {
-        app.vue.upvoted = status;
-    }
 
     app.set_add_modal = function () {
         app.vue.show_add_modal = !app.vue.show_add_modal;
@@ -74,7 +69,6 @@ let init = (app) => {
     // We form the dictionary of all methods, so we can assign them
     // to the Vue app in a single blow.
     app.methods = {
-        set_upvote: app.set_upvote,
         set_add_modal: app.set_add_modal,
         add_post: app.add_post,
         delete_post: app.delete_post,

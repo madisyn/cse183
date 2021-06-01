@@ -184,7 +184,7 @@ p.review-preview {
                     <div class="card-content">
                         <div class="content">
                             <div class="columns" style="margin-bottom: 0rem;">
-                                <h2 class="column is-11" style="margin-bottom: 0.25rem;">{{p.name}}</h2>\
+                                <h2 class="column is-11" style="margin-bottom: 0.25rem;">{{p.name}}</h2>
                                 <span class="column is-1 has-text-danger" v-if="user_email==p.email">
                                     <i class="fa fa-trash fa-lg" @click="delete_post(p._idx)" style="cursor: pointer;"></i>
                                 </span>
@@ -211,22 +211,6 @@ p.review-preview {
                             </div>
                         </div>
                     </div>
-                    <footer class="card-footer">
-                        <div class="card-footer-item has-text-right">
-                            <div v-if="!upvoted">
-                                <span class="icon">20</span>
-                                <span class="upvote" @click="set_upvote(true)">
-                                    <i class="fa fa-angle-up fa-lg"></i>
-                                </span>
-                            </div>
-                            <div v-if="upvoted">
-                                <span class="icon has-text-info">20</span>
-                                <span class="upvote has-text-info" @click="set_upvote(false)">
-                                    <i class="fa fa-angle-up fa-lg"></i>
-                                </span>
-                            </div>
-                        </div>
-                    </footer>
                 </div>
             </div>
         </div>
