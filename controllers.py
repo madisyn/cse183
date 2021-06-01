@@ -40,8 +40,8 @@ url_signer = URLSigner(session)
 def index():
     if get_user_email() is None:
         redirect(URL('auth/login'))
-    # if get_username() is None:
-    #     redirect(URL('signup'))
+    if get_username() is None:
+        redirect(URL('signup'))
     return dict(
         signer=url_signer,
         get_email_url = URL('get_email', signer=url_signer),
@@ -49,12 +49,16 @@ def index():
         get_locations_url = URL('get_locations', signer=url_signer),
         delete_location_url = URL('delete_location', signer=url_signer),
         location_url = URL('location'),
+        add_username_url = URL('add_username', signer=url_signer),
     )
 
 @action('signup')
 @action.uses(db, auth, 'signup.html')
 def signup():
-    return dict()
+    return dict(
+        index_url = URL('index'),
+        add_username_url = URL('add_username', signer=url_signer),
+    )
 
 @action('location/<loc_id:int>')
 @action.uses(url_signer, db, auth, 'location.html')
@@ -70,12 +74,15 @@ def location(loc_id=None):
 
 # USER AUTH
 
-@action('add_user')
+@action('add_username', method="POST")
 @action.uses(url_signer.verify(), db, auth)
-def add_user():
-    # called when user signs up
-    # add the username to user_profiles
-    return dict()
+def add_username():
+    user = get_user()
+    id = db.user_profiles.insert(
+        user = user,
+        username=request.json.get('username'),
+    )
+    return dict(id=id, username=request.json.get('username'))
 
 @action('get_email')
 @action.uses(url_signer.verify(), db, auth)

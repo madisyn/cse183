@@ -30,7 +30,7 @@ def get_time():
 db.define_table(
     'user_profiles',
     Field('user', 'reference auth_user', default=get_user),
-    Field('username', 'text'),
+    Field('username', 'string'),
 )
 
 db.define_table(
