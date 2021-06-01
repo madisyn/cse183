@@ -42,7 +42,7 @@ db.define_table(
 )
 
 db.define_table(
-    'weep_reviews',
+    'review',
     Field('location', 'reference location', ondelete="CASCADE"),
     Field('noise_rating', 'integer', requires=IS_INT_IN_RANGE(0, 5)),
     Field('people_rating', 'integer', requires=IS_INT_IN_RANGE(0, 5)),
@@ -52,7 +52,8 @@ db.define_table(
     #Field('images', Field('image', 'upload', default='path/to/file')), Unit 18 storing files in google storage
     Field('helpful_count', 'integer', default=0),
     Field('date_posted', default=get_time),
-    Field('author', 'reference auth_user', default=get_user),
+    Field('username', default=get_username),
+    Field('user', 'reference auth_user', default=get_user),
 )
 
 db.commit()

@@ -25,6 +25,9 @@ let init = (app) => {
 
     app.set_add_modal = function () {
         app.vue.show_add_modal = !app.vue.show_add_modal;
+        if (!app.vue.show_add_modal) {
+            app.reset_add_form();
+        }
     }
 
     app.reset_add_form = function () {
@@ -107,7 +110,6 @@ let init = (app) => {
             app.vue.posts = app.enumerate(response.data.posts);
             app.apply_filter();
         });
-        console.log(app.vue.filter);
     };
 
     // Call to the initializer.

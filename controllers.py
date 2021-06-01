@@ -29,7 +29,7 @@ from py4web import action, request, abort, redirect, URL
 from yatl.helpers import A
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 from py4web.utils.url_signer import URLSigner
-from .models import get_user_email, get_username, get_user
+from .models import get_user_email, get_username, get_user, get_time
 
 url_signer = URLSigner(session)
 
@@ -68,6 +68,8 @@ def location(loc_id=None):
         loc_id=loc_id,
         get_email_url = URL('get_email', signer=url_signer),
         get_location_url = URL('get_location', signer=url_signer),
+        get_reviews_url =URL('get_reviews', signer=url_signer),
+        add_review_url = URL('add_review', signer=url_signer),
     )
 
 # API FUNCTIONS ----------------------------------------------------------
@@ -123,19 +125,33 @@ def delete_location():
     db(db.location.id == id).delete()
     return "ok"
 
-# @action('edit/<location_id:int>', method=["GET", "POST"])
-# @action.uses(db, session, auth.user, url_signer.verify(), 'edit.html')
-# def edit(location_id=None):
-#     assert location_id is not None
-#     p = db.location[location_id]
-#     if p is None:
-#         redirect(URL('index'))
-#     form = Form(db.location, record=p, deletable=False, csrf_session=session, formstyle=FormStyleBulma)
-#     if form.accepted:
-#         redirect(URL('index'))
-#     return dict(form=form)
-
 # REVIEWS
+
+@action('get_reviews', method="GET")
+@action.uses(url_signer.verify(), db, auth)
+def get_reviews():
+    loc_id = request.params.get("loc_id")
+    reviews = db(db.review.location == loc_id).select().as_list()
+    return dict(reviews=reviews)
+
+@action('add_review', method="POST")
+@action.uses(url_signer.verify(), db, auth)
+def add_review():
+    username = get_username()
+    user = get_user()
+    date = get_time()
+    id = db.review.insert(
+        location=request.json.get('location'),
+        cry_rating=request.json.get('cry'),
+        atmosphere_rating=request.json.get('atmosphere'),
+        noise_rating=request.json.get('noise'),
+        people_rating=request.json.get('people'),
+        comment=request.json.get('comment'),
+        date_posted=date,
+        username=username,
+        user=user,
+    )
+    return dict(id=id, date_posted=date, username=username)
 
 # @action('add_review/<location_title:int>', method=["GET", "POST"])
 # @action.uses(db, session, auth.user, 'add_review.html')

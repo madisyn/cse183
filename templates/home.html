@@ -99,49 +99,11 @@ p.review-preview {
                                 <input class="input" type="text" placeholder="Description here..." v-model="location_desc">
                             </div>
                         </div>
-                        <!-- TODO: adding a new review along with the new location -->
-                        <!-- <div class="field">
-                            <div class="control">
-                                <label class="label">Your Review</label>
-                                <textarea class="textarea" placeholder="Your review here..."></textarea>
-                            </div>
-                        </div> -->
-                        <!-- <div class="field">
-                            <div class="control">
-                                <label class="label">Noise Rating</label>
-                                <span @mouseout="noise_rating_out()">
-                                    <span @mouseover="noise_rating_over(img._idx, star_idx)"
-                                          @click="set_stars(img._idx, star_idx)"
-                                          v-for="star_idx in [1, 2, 3, 4, 5]">
-                                        <i v-if="star_idx <= img.num_stars_display" class="fa fa-circle"></i>
-                                        <i v-if="star_idx > img.num_stars_display" class="fa fa-circle-o"></i>
-                                    </span>
-                                </span>
-                            </div>
-                        </div> -->
-                        <!-- <div class="field">
-                            <div class="control">
-                                <label class="label">People Rating</label>
-                                <input class="input" type="text" placeholder="Rating out of 5...">
-                            </div>
-                        </div>
-                        <div class="field">
-                            <div class="control">
-                                <label class="label">Atmosphere Rating</label>
-                                <input class="input" type="text" placeholder="Rating out of 5...">
-                            </div>
-                        </div>
-                        <div class="field">
-                            <div class="control">
-                                <label class="label">Cry Rating</label>
-                                <input class="input" type="text" placeholder="Rating out of 5...">
-                            </div>
-                        </div> -->
                     </div>
                 </section>
                 <footer class="modal-card-foot">
-                    <button class="button is-success" @click="add_post()">Add Post</button>
-                    <button class="button">Cancel</button>
+                    <button class="button is-info" @click="add_post()">Add Post</button>
+                    <button class="button" @click="set_add_modal()">Cancel</button>
                 </footer>
             </div>
         </div>
