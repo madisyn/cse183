@@ -149,19 +149,52 @@ p.review-preview {
         <!-- filters -->
         <div class="columns row field is-grouped">
             <div class="control column">
-                <button class="button is-info is-light is-wide">
+                <button
+                    v-if="filter !== 'top'"
+                    class="button is-info is-light is-wide"
+                    @click="change_filter('top')"
+                >
+                    <span class="icon"><i class="fa fa-check"></i></span>
+                    <span>Top</span>
+                </button>
+                <button
+                    v-if="filter === 'top'"
+                    class="button is-info is-light is-wide is-outlined"
+                >
                     <span class="icon"><i class="fa fa-check"></i></span>
                     <span>Top</span>
                 </button>
             </div>
             <div class="control column">
-                <button class="button is-info is-light is-wide">
+                <button
+                    v-if="filter !== 'new'"
+                    class="button is-info is-light is-wide"
+                    @click="change_filter('new')"
+                >
+                    <span class="icon"><i class="fa fa-exclamation"></i></span>
+                    <span>New</span>
+                </button>
+                <button
+                    v-if="filter === 'new'"
+                    class="button is-info is-light is-wide is-outlined"
+                >
                     <span class="icon"><i class="fa fa-exclamation"></i></span>
                     <span>New</span>
                 </button>
             </div>
             <div class="control column">
-                <button class="button is-info is-light is-wide">
+                <button
+                    v-if="filter !== 'rising'"
+                    class="button is-info is-light is-wide"
+                    @click="change_filter('rising')"
+                >
+                    <span class="icon"><i class="fa fa-arrow-up"></i></span>
+                    <span>Rising</span>
+                </button>
+                <button
+                    v-if="filter === 'rising'"
+                    class="button is-info is-light is-wide is-outlined"
+                >
                     <span class="icon"><i class="fa fa-arrow-up"></i></span>
                     <span>Rising</span>
                 </button>
