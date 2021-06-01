@@ -14,6 +14,7 @@ let init = (app) => {
         description: "",
         poster: "",
         reviews: [],
+        filter: "top",
         upvoted: true,
     };
 
@@ -24,10 +25,20 @@ let init = (app) => {
         return a;
     };
 
+    app.change_filter = function (new_filter) {
+        app.vue.filter = new_filter;
+        app.apply_filter();
+    }
+
+    app.apply_filter = function () {
+        // TODO
+    }
+
     // We form the dictionary of all methods, so we can assign them
     // to the Vue app in a single blow.
     app.methods = {
-        // TODO
+        change_filter: app.change_filter,
+        apply_filter: app.apply_filter,
     };
 
     // This creates the Vue instance.

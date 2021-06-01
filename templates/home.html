@@ -201,11 +201,12 @@ p.review-preview {
             </div>
         </div>
 
+        <!-- placeholder for posts -->
         <div class="content" v-if="posts.length == 0">
             <i>No posts to show</i>
         </div>
 
-        <!-- cards -->
+        <!-- posts -->
         <div v-for="p in posts">
             <div class="card is-horizontal location-card" @click="open_location(this, p.id)" >
                 <div class="card-image">
