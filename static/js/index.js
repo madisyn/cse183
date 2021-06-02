@@ -8,12 +8,12 @@ let init = (app) => {
 
     // This is the Vue data.
     app.data = {
-        upvoted: false,
         user_email: "",
         show_add_modal: false,
         location_name: "",
         location_desc: "",
         posts: [],
+        filter: "top",
     };
 
     app.enumerate = (a) => {
@@ -23,12 +23,11 @@ let init = (app) => {
         return a;
     };
 
-    app.set_upvote = function (status) {
-        app.vue.upvoted = status;
-    }
-
     app.set_add_modal = function () {
         app.vue.show_add_modal = !app.vue.show_add_modal;
+        if (!app.vue.show_add_modal) {
+            app.reset_add_form();
+        }
     }
 
     app.reset_add_form = function () {
@@ -48,6 +47,7 @@ let init = (app) => {
                 description: app.vue.location_desc,
                 email: app.vue.user_email,
             });
+            app.apply_filter();
             app.enumerate(app.vue.posts);
             app.reset_add_form();
             app.set_add_modal();
@@ -67,13 +67,28 @@ let init = (app) => {
         });
     }
 
+    app.open_location = function (object, post_id) {
+        object.location.href = location_url + '/' + post_id;
+    }
+
+    app.change_filter = function (new_filter) {
+        app.vue.filter = new_filter;
+        app.apply_filter();
+    }
+
+    app.apply_filter = function () {
+        // TODO
+    }
+
     // We form the dictionary of all methods, so we can assign them
     // to the Vue app in a single blow.
     app.methods = {
-        set_upvote: app.set_upvote,
         set_add_modal: app.set_add_modal,
         add_post: app.add_post,
         delete_post: app.delete_post,
+        open_location: app.open_location,
+        change_filter: app.change_filter,
+        apply_filter: app.apply_filter,
     };
 
     // This creates the Vue instance.
@@ -91,8 +106,9 @@ let init = (app) => {
         axios.get(get_email_url).then(function (response) {
             app.vue.user_email = response.data.email;
         })
-        axios.get(get_location_url).then(function (response) {
+        axios.get(get_locations_url).then(function (response) {
             app.vue.posts = app.enumerate(response.data.posts);
+            app.apply_filter();
         });
     };
 

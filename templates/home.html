@@ -63,6 +63,7 @@ p.review-preview {
 
 .location-card {
     margin-top: 1.5rem;
+    cursor: pointer
 }
 
 </style>
@@ -98,49 +99,11 @@ p.review-preview {
                                 <input class="input" type="text" placeholder="Description here..." v-model="location_desc">
                             </div>
                         </div>
-                        <!-- TODO: adding a new review along with the new location -->
-                        <!-- <div class="field">
-                            <div class="control">
-                                <label class="label">Your Review</label>
-                                <textarea class="textarea" placeholder="Your review here..."></textarea>
-                            </div>
-                        </div> -->
-                        <!-- <div class="field">
-                            <div class="control">
-                                <label class="label">Noise Rating</label>
-                                <span @mouseout="noise_rating_out()">
-                                    <span @mouseover="noise_rating_over(img._idx, star_idx)"
-                                          @click="set_stars(img._idx, star_idx)"
-                                          v-for="star_idx in [1, 2, 3, 4, 5]">
-                                        <i v-if="star_idx <= img.num_stars_display" class="fa fa-circle"></i>
-                                        <i v-if="star_idx > img.num_stars_display" class="fa fa-circle-o"></i>
-                                    </span>
-                                </span>
-                            </div>
-                        </div> -->
-                        <!-- <div class="field">
-                            <div class="control">
-                                <label class="label">People Rating</label>
-                                <input class="input" type="text" placeholder="Rating out of 5...">
-                            </div>
-                        </div>
-                        <div class="field">
-                            <div class="control">
-                                <label class="label">Atmosphere Rating</label>
-                                <input class="input" type="text" placeholder="Rating out of 5...">
-                            </div>
-                        </div>
-                        <div class="field">
-                            <div class="control">
-                                <label class="label">Cry Rating</label>
-                                <input class="input" type="text" placeholder="Rating out of 5...">
-                            </div>
-                        </div> -->
                     </div>
                 </section>
                 <footer class="modal-card-foot">
-                    <button class="button is-success" @click="add_post()">Add Post</button>
-                    <button class="button">Cancel</button>
+                    <button class="button is-info" @click="add_post()">Add Post</button>
+                    <button class="button" @click="set_add_modal()">Cancel</button>
                 </footer>
             </div>
         </div>
@@ -148,32 +111,66 @@ p.review-preview {
         <!-- filters -->
         <div class="columns row field is-grouped">
             <div class="control column">
-                <button class="button is-info is-light is-wide">
+                <button
+                    v-if="filter !== 'top'"
+                    class="button is-info is-light is-wide"
+                    @click="change_filter('top')"
+                >
+                    <span class="icon"><i class="fa fa-check"></i></span>
+                    <span>Top</span>
+                </button>
+                <button
+                    v-if="filter === 'top'"
+                    class="button is-info is-light is-wide is-outlined"
+                >
                     <span class="icon"><i class="fa fa-check"></i></span>
                     <span>Top</span>
                 </button>
             </div>
             <div class="control column">
-                <button class="button is-info is-light is-wide">
+                <button
+                    v-if="filter !== 'new'"
+                    class="button is-info is-light is-wide"
+                    @click="change_filter('new')"
+                >
+                    <span class="icon"><i class="fa fa-exclamation"></i></span>
+                    <span>New</span>
+                </button>
+                <button
+                    v-if="filter === 'new'"
+                    class="button is-info is-light is-wide is-outlined"
+                >
                     <span class="icon"><i class="fa fa-exclamation"></i></span>
                     <span>New</span>
                 </button>
             </div>
             <div class="control column">
-                <button class="button is-info is-light is-wide">
+                <button
+                    v-if="filter !== 'rising'"
+                    class="button is-info is-light is-wide"
+                    @click="change_filter('rising')"
+                >
+                    <span class="icon"><i class="fa fa-arrow-up"></i></span>
+                    <span>Rising</span>
+                </button>
+                <button
+                    v-if="filter === 'rising'"
+                    class="button is-info is-light is-wide is-outlined"
+                >
                     <span class="icon"><i class="fa fa-arrow-up"></i></span>
                     <span>Rising</span>
                 </button>
             </div>
         </div>
 
+        <!-- placeholder for posts -->
         <div class="content" v-if="posts.length == 0">
             <i>No posts to show</i>
         </div>
 
-        <!-- cards -->
+        <!-- posts -->
         <div v-for="p in posts">
-            <div class="card is-horizontal location-card">
+            <div class="card is-horizontal location-card" @click="open_location(this, p.id)" >
                 <div class="card-image">
                     <figure class="image is-square">
                     <img src="https://images7.alphacoders.com/303/303995.jpg" alt="Placeholder image">
@@ -183,7 +180,7 @@ p.review-preview {
                     <div class="card-content">
                         <div class="content">
                             <div class="columns" style="margin-bottom: 0rem;">
-                                <h2 class="column is-11" style="margin-bottom: 0.25rem;">{{p.name}}</h2>\
+                                <h2 class="column is-11" style="margin-bottom: 0.25rem;">{{p.name}}</h2>
                                 <span class="column is-1 has-text-danger" v-if="user_email==p.email">
                                     <i class="fa fa-trash fa-lg" @click="delete_post(p._idx)" style="cursor: pointer;"></i>
                                 </span>
@@ -210,25 +207,10 @@ p.review-preview {
                             </div>
                         </div>
                     </div>
-                    <footer class="card-footer">
-                        <div class="card-footer-item has-text-right">
-                            <div v-if="!upvoted">
-                                <span class="icon">20</span>
-                                <span class="upvote" @click="set_upvote(true)">
-                                    <i class="fa fa-angle-up fa-lg"></i>
-                                </span>
-                            </div>
-                            <div v-if="upvoted">
-                                <span class="icon has-text-info">20</span>
-                                <span class="upvote has-text-info" @click="set_upvote(false)">
-                                    <i class="fa fa-angle-up fa-lg"></i>
-                                </span>
-                            </div>
-                        </div>
-                    </footer>
                 </div>
             </div>
         </div>
+        
     </div>
 </div>
 
@@ -237,8 +219,9 @@ p.review-preview {
 <script>
     let get_email_url = "[[=XML(get_email_url)]]";
     let add_location_url = "[[=XML(add_location_url)]]";
-    let get_location_url = "[[=XML(get_location_url)]]";
+    let get_locations_url = "[[=XML(get_locations_url)]]";
     let delete_location_url = "[[=XML(delete_location_url)]]";
+    let location_url = "[[=XML(location_url)]]"
 </script>
 <script src="js/index.js"></script>
 [[end]]

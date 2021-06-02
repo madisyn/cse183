@@ -29,7 +29,7 @@ from py4web import action, request, abort, redirect, URL
 from yatl.helpers import A
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 from py4web.utils.url_signer import URLSigner
-from .models import get_user_email, get_username, get_user
+from .models import get_user_email, get_username, get_user, get_time
 
 url_signer = URLSigner(session)
 
@@ -43,27 +43,48 @@ def index():
     if get_username() is None:
         redirect(URL('signup'))
     return dict(
+        signer=url_signer,
         get_email_url = URL('get_email', signer=url_signer),
         add_location_url = URL('add_location', signer=url_signer),
-        get_location_url = URL('get_location', signer=url_signer),
+        get_locations_url = URL('get_locations', signer=url_signer),
         delete_location_url = URL('delete_location', signer=url_signer),
+        location_url = URL('location'),
+        add_username_url = URL('add_username', signer=url_signer),
     )
 
 @action('signup')
 @action.uses(db, auth, 'signup.html')
 def signup():
-    return dict()
+    return dict(
+        index_url = URL('index'),
+        add_username_url = URL('add_username', signer=url_signer),
+    )
+
+@action('location/<loc_id:int>')
+@action.uses(url_signer, db, auth, 'location.html')
+def location(loc_id=None):
+    assert loc_id is not None
+    return dict(
+        loc_id=loc_id,
+        get_email_url = URL('get_email', signer=url_signer),
+        get_location_url = URL('get_location', signer=url_signer),
+        get_reviews_url =URL('get_reviews', signer=url_signer),
+        add_review_url = URL('add_review', signer=url_signer),
+    )
 
 # API FUNCTIONS ----------------------------------------------------------
 
 # USER AUTH
 
-@action('add_user')
+@action('add_username', method="POST")
 @action.uses(url_signer.verify(), db, auth)
-def add_user():
-    # called when user signs up
-    # add the username to user_profiles
-    return dict()
+def add_username():
+    user = get_user()
+    id = db.user_profiles.insert(
+        user = user,
+        username=request.json.get('username'),
+    )
+    return dict(id=id, username=request.json.get('username'))
 
 @action('get_email')
 @action.uses(url_signer.verify(), db, auth)
@@ -71,6 +92,19 @@ def get_email():
     return dict(email=get_user_email())
 
 # LOCATION
+
+@action('get_locations', method="GET")
+@action.uses(url_signer.verify(), db, auth)
+def get_locations():
+    posts = db(db.location).select().as_list()
+    return dict(posts=posts)
+
+@action('get_location', method="GET")
+@action.uses(url_signer.verify(), db, auth)
+def get_location():
+    loc_id = request.params.get("loc_id")
+    location = db(db.location.id == loc_id).select().as_list()[0]
+    return dict(location=location)
 
 @action('add_location', method="POST")
 @action.uses(url_signer.verify(), db, auth)
@@ -83,12 +117,6 @@ def add_location():
     )
     return dict(id=id)
 
-@action('get_location', method="GET")
-@action.uses(url_signer.verify(), db, auth)
-def get_location():
-    posts = db(db.location).select().as_list()
-    return dict(posts=posts)
-
 @action('delete_location')
 @action.uses(url_signer.verify(), db, auth)
 def delete_location():
@@ -97,19 +125,33 @@ def delete_location():
     db(db.location.id == id).delete()
     return "ok"
 
-# @action('edit/<location_id:int>', method=["GET", "POST"])
-# @action.uses(db, session, auth.user, url_signer.verify(), 'edit.html')
-# def edit(location_id=None):
-#     assert location_id is not None
-#     p = db.location[location_id]
-#     if p is None:
-#         redirect(URL('index'))
-#     form = Form(db.location, record=p, deletable=False, csrf_session=session, formstyle=FormStyleBulma)
-#     if form.accepted:
-#         redirect(URL('index'))
-#     return dict(form=form)
-
 # REVIEWS
+
+@action('get_reviews', method="GET")
+@action.uses(url_signer.verify(), db, auth)
+def get_reviews():
+    loc_id = request.params.get("loc_id")
+    reviews = db(db.review.location == loc_id).select().as_list()
+    return dict(reviews=reviews)
+
+@action('add_review', method="POST")
+@action.uses(url_signer.verify(), db, auth)
+def add_review():
+    username = get_username()
+    user = get_user()
+    date = get_time()
+    id = db.review.insert(
+        location=request.json.get('location'),
+        cry_rating=request.json.get('cry'),
+        atmosphere_rating=request.json.get('atmosphere'),
+        noise_rating=request.json.get('noise'),
+        people_rating=request.json.get('people'),
+        comment=request.json.get('comment'),
+        date_posted=date,
+        username=username,
+        user=user,
+    )
+    return dict(id=id, date_posted=date, username=username)
 
 # @action('add_review/<location_title:int>', method=["GET", "POST"])
 # @action.uses(db, session, auth.user, 'add_review.html')
