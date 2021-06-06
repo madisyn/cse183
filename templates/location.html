@@ -13,6 +13,46 @@
     margin-bottom: 2rem;
 }
 
+.tag-group {
+    margin-top: 1rem;
+}
+
+.description-card {
+    margin-bottom: 1.5rem;
+}
+
+.card.is-horizontal {
+    display: flex;
+}
+
+.image.is-square {
+    margin-left: 1.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.card .card-image {
+    width: 40%;
+    height: 35%;
+}
+
+.card .card-stacked {
+    flex-direction: column;
+    flex: 1 1 auto;
+    display: flex;
+    position: relative;
+    width: 70%;
+}
+
+.card .card-stacked.card-content {
+    flex-grow: 1;
+}
+
+.desc-rating {
+    margin-top: .5rem;
+    margin-bottom: 1rem;
+}
+
 .label-exp {
     font-weight: 300;
 }
@@ -33,6 +73,10 @@
     margin-top: 1.5rem;
 }
 
+.upvote {
+    cursor: pointer;
+}
+
 </style>
 
 <div class="section" id="vue-location" v-cloak>
@@ -46,14 +90,71 @@
                     <h2 class="has-text-white">{{name}}</h2>
                     <div class="rating">
                         <span class="icon has-text-white" v-for="star_idx in [1, 2, 3, 4, 5]">
-                            <i v-if="star_idx <= 4" class="fa fa-circle fa-lg"></i>
-                            <i v-if="star_idx > 4" class="fa fa-circle-o fa-lg"></i>
+                            <i v-if="star_idx <= avg_rating" class="fa fa-circle fa-lg"></i>
+                            <i v-if="star_idx > avg_rating" class="fa fa-circle-o fa-lg"></i>
                         </span>
-                        <span class="review-count has-text-white">23</span>
+                        <span class="review-count has-text-white">{{review_count}}</span>
+                    </div>
+                    <div class="field is-grouped tag-group">
+                        <div class="control" v-for="t in tags">
+                            <span class="tag is-light is-rounded">{{t}}</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
+        
+        <!-- overall description -->
+        <div class="card description-card is-horizontal">
+            <div class="card-image">
+                <figure class="image is-square">
+                <img src="https://images7.alphacoders.com/303/303995.jpg" alt="Placeholder image">
+                </figure>
+            </div>
+            <div class="card-stacked">
+                <div class="card-content">
+                    <div class="content">
+                        <h4><b>Description</b></h4>
+                        <p>{{description}}</p>
+                        <h4>Overall Ratings</h4>
+                        <div class="columns">
+                            <div class="column">
+                                <i>Cry Quality</i>
+                                <div class="desc-rating">
+                                    <span class="icon has-text-link" v-for="star_idx in [1, 2, 3, 4, 5]">
+                                        <i v-if="star_idx <= avg_cry" class="fa fa-circle fa-lg"></i>
+                                        <i v-if="star_idx > avg_cry" class="fa fa-circle-o fa-lg"></i>
+                                    </span>
+                                </div>
+                                <i>Atmosphere</i>
+                                <div class="desc-rating">
+                                    <span class="icon has-text-link" v-for="star_idx in [1, 2, 3, 4, 5]">
+                                        <i v-if="star_idx <= avg_atmosphere" class="fa fa-circle fa-lg"></i>
+                                        <i v-if="star_idx > avg_atmosphere" class="fa fa-circle-o fa-lg"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <i>Noise Level</i>
+                                <div class="desc-rating">
+                                    <span class="icon has-text-link" v-for="star_idx in [1, 2, 3, 4, 5]">
+                                        <i v-if="star_idx <= avg_noise" class="fa fa-circle fa-lg"></i>
+                                        <i v-if="star_idx > avg_noise" class="fa fa-circle-o fa-lg"></i>
+                                    </span>
+                                </div>
+                                <i>Amount of People</i>
+                                <div class="desc-rating">
+                                    <span class="icon has-text-link" v-for="star_idx in [1, 2, 3, 4, 5]">
+                                        <i v-if="star_idx <= avg_people" class="fa fa-circle fa-lg"></i>
+                                        <i v-if="star_idx > avg_people" class="fa fa-circle-o fa-lg"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- create button -->
         <button class="button is-info is-wide" @click="set_add_modal()">
@@ -74,7 +175,7 @@
                         <div class="field">
                             <div class="control">
                                 <label class="label">
-                                    Overall Cry Quality
+                                    Cry Quality
                                 </label>
                                 <input class="input" type="number" min="0" max="5" v-model="cry_rating">
                             </div>
@@ -158,48 +259,59 @@
             </div>
             <div class="control column">
                 <button
-                    v-if="filter !== 'rising'"
+                    v-if="filter !== 'my_reviews'"
                     class="button is-info is-light is-wide"
-                    @click="change_filter('rising')"
+                    @click="change_filter('my_reviews')"
                 >
                     <span class="icon"><i class="fa fa-arrow-up"></i></span>
-                    <span>Rising</span>
+                    <span>My Reviews</span>
                 </button>
                 <button
-                    v-if="filter === 'rising'"
+                    v-if="filter === 'my_reviews'"
                     class="button is-info is-light is-wide is-outlined"
                 >
                     <span class="icon"><i class="fa fa-arrow-up"></i></span>
-                    <span>Rising</span>
+                    <span>My Reviews</span>
                 </button>
             </div>
         </div>
 
         <!-- placeholder for reviews -->
         <div class="content" v-if="reviews.length == 0">
-            <i>No posts to show</i>
+            <i>No reviews to show</i>
         </div>
 
         <!-- review card -->
         <div v-for="r in reviews">
-            <div class="card review-card">
+            <div
+                v-if="filter !== 'my_reviews' || (filter === 'my_reviews' && r.email === user_email)"
+                class="card review-card"
+            >
                 <div class="card-content">
                     <div class="media">
-                        <div class="media-left">
+                        <!-- user avatar (not implemented) -->
+                        <!-- <div class="media-left">
                             <figure class="image is-48x48">
                                 <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
                             </figure>
-                        </div>
+                        </div> -->
                         <div class="media-content">
-                            <p class="title is-4">{{r.username}}</p>
-                            <p class="subtitle is-6">{{parse_date(r.date_posted)}}</p>
+                            <div class="columns" style="margin-bottom: 0rem;">
+                                <div class="column is-11">
+                                    <p class="title is-4">{{r.username}}</p>
+                                    <p class="subtitle is-6">{{parse_date(r.date_posted)}}</p>
+                                </div>
+                                <span class="column is-1 has-text-danger" v-if="user_email==r.email">
+                                    <i class="fa fa-trash fa-lg" @click="delete_review(r._idx)" style="cursor: pointer;"></i>
+                                </span>
+                            </div>
                         </div>
                     </div>
                     <div class="content">
                         <div class="columns">
                             <div class="column is-3">
                                 <div class="rating-title" style="margin-bottom: .25rem;">
-                                    <i>Overall Cry Quality</i>
+                                    <i>Cry Quality</i>
                                 </div>
                                 <div class="rating">
                                     <span class="icon has-text-link" v-for="star_idx in [1, 2, 3, 4, 5]">
@@ -247,14 +359,14 @@
                 </div>
                 <footer class="card-footer">
                     <div class="card-footer-item has-text-right">
-                        <div v-if="!upvoted">
-                            <span class="icon upvote">
+                        <div v-if="!helpful.includes(r.id)" class="upvote" v-on:click="change_helpful(r._idx)">
+                            <span class="icon">
                                 <i class="fa fa-angle-up fa-lg"></i>
                             </span>
                             <span>Helpful ({{r.helpful_count}})</span>
                         </div>
-                        <div v-if="upvoted">
-                            <span class="upvote has-text-info icon">
+                        <div v-if="helpful.includes(r.id)" class="upvote" v-on:click="change_helpful(r._idx)">
+                            <span class="has-text-info icon">
                                 <i class="fa fa-angle-up fa-lg"></i>
                             </span>
                             <span class="has-text-info">Helpful ({{r.helpful_count}})</span>
@@ -276,6 +388,10 @@
     let get_location_url = "[[=XML(get_location_url)]]";
     let get_reviews_url = "[[=XML(get_reviews_url)]]";
     let add_review_url = "[[=XML(add_review_url)]]";
+    let delete_review_url = "[[=XML(delete_review_url)]]";
+    let get_user_helpful_url = "[[=XML(get_user_helpful_url)]]";
+    let add_helpful_url = "[[=XML(add_helpful_url)]]"
+    let delete_helpful_url = "[[=XML(delete_helpful_url)]]"
 </script>
 <script src="js/location.js"></script>
 [[end]]

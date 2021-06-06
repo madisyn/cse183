@@ -13,6 +13,13 @@ let init = (app) => {
         name: "",
         description: "",
         poster: "",
+        review_count: 0,
+        avg_rating: 0,
+        avg_noise: 0,
+        avg_people: 0,
+        avg_atmosphere: 0,
+        avg_cry: 0,
+        tags: [],
         show_add_modal: false,
         cry_rating: 0,
         atmos_rating: 0,
@@ -21,7 +28,7 @@ let init = (app) => {
         review_content: "",
         reviews: [],
         filter: "top",
-        upvoted: true,
+        helpful: [],
     };
 
     app.enumerate = (a) => {
@@ -58,20 +65,51 @@ let init = (app) => {
             }).then(function (response) {
             app.vue.reviews.unshift({
                 id: response.data.id,
-                cry: app.vue.cry_rating,
-                atmosphere: app.vue.atmos_rating,
-                noise: app.vue.noise_rating,
-                people: app.vue.ppl_rating,
+                cry_rating: app.vue.cry_rating,
+                atmosphere_rating: app.vue.atmos_rating,
+                noise_rating: app.vue.noise_rating,
+                people_rating: app.vue.ppl_rating,
                 comment: app.vue.review_content,
                 helpful_count: 0,
                 date_posted: response.data.date_posted,
                 username: response.data.username,
+                email: app.vue.user_email,
             });
-            console.log(response.data.date_posted);
+            // update averages
+            app.vue.review_count = response.data.updated.review_count;
+            app.vue.avg_rating = response.data.updated.avg_rating;
+            app.vue.avg_noise = response.data.updated.avg_noise;
+            app.vue.avg_people = response.data.updated.avg_people;
+            app.vue.avg_atmosphere = response.data.updated.avg_atmosphere;
+            app.vue.avg_cry = response.data.updated.avg_cry;
+            app.vue.tags = response.data.updated.tags;
+
             app.apply_filter();
-            app.enumerate(app.vue.reviews);
             app.reset_add_form();
             app.set_add_modal();
+        });
+    }
+
+    app.delete_review = function (review_idx) {
+        let id = app.vue.reviews[review_idx].id;
+        axios.get(delete_review_url, {params: {id: id, location: loc_id}}).then(function (response) {
+            console.log(response.data);
+            for (let i = 0; i < app.vue.reviews.length; i++) {
+                if (app.vue.reviews[i].id === id) {
+                    app.vue.reviews.splice(i, 1);
+                    break;
+                }
+            }
+            // update averages
+            app.vue.review_count = response.data.updated.review_count;
+            app.vue.avg_rating = response.data.updated.avg_rating;
+            app.vue.avg_noise = response.data.updated.avg_noise;
+            app.vue.avg_people = response.data.updated.avg_people;
+            app.vue.avg_atmosphere = response.data.updated.avg_atmosphere;
+            app.vue.avg_cry = response.data.updated.avg_cry;
+            app.vue.tags = response.data.updated.tags;
+            // sort for filters
+            app.apply_filter();
         });
     }
 
@@ -89,7 +127,39 @@ let init = (app) => {
     }
 
     app.apply_filter = function () {
-        // TODO
+        if (app.vue.filter === 'top') {
+            app.vue.reviews.sort((a, b) => (a.helpful_count > b.helpful_count) ? -1 : 1);
+        }
+        else if (app.vue.filter === 'new') {
+            app.vue.reviews.sort((a, b) => (a.date_posted.localeCompare(b.date_posted) === 1) ? -1 : 1);
+        }
+        app.enumerate(app.vue.reviews);
+    }
+
+    app.change_helpful = function (idx) {
+        let review_id = app.vue.reviews[idx].id;
+        // remove helpful
+        if (app.vue.helpful.includes(review_id)) {
+            axios.get(delete_helpful_url, {
+                params: {
+                    id: review_id,
+                    email: app.vue.user_email
+                }
+            }).then(function (response) {
+                app.vue.reviews[idx].helpful_count = response.data.count;
+                const index = app.vue.helpful.indexOf(review_id);
+                if (index > -1) {
+                    app.vue.helpful.splice(index, 1);
+                }
+            });
+        }
+        // add helpful
+        else {
+            axios.post(add_helpful_url, {id: review_id}).then(function (response) {
+                app.vue.reviews[idx].helpful_count = response.data.count;
+                app.vue.helpful.push(review_id);
+            });
+        }
     }
 
     // We form the dictionary of all methods, so we can assign them
@@ -99,7 +169,9 @@ let init = (app) => {
         change_filter: app.change_filter,
         apply_filter: app.apply_filter,
         add_review: app.add_review,
+        delete_review: app.delete_review,
         parse_date: app.parse_date,
+        change_helpful: app.change_helpful,
     };
 
     // This creates the Vue instance.
@@ -122,10 +194,25 @@ let init = (app) => {
             app.vue.name = response.data.location.name;
             app.vue.description = response.data.location.description;
             app.vue.poster = response.data.location.email;
+            app.vue.review_count = response.data.location.review_count;
+            app.vue.avg_rating = response.data.location.avg_rating;
+            app.vue.avg_noise = response.data.location.avg_noise;
+            app.vue.avg_people = response.data.location.avg_people;
+            app.vue.avg_atmosphere = response.data.location.avg_atmosphere;
+            app.vue.avg_cry = response.data.location.avg_cry;
+            app.vue.tags = response.data.location.tags;
         });
         axios.get(get_reviews_url, {params: {loc_id: loc_id}}).then(function (response) {
             app.vue.reviews = app.enumerate(response.data.reviews);
             app.apply_filter();
+        });
+        axios.get(get_user_helpful_url).then(function (response) {
+            let helpful = [];
+            response.data.helpful.forEach(function (row) {
+                helpful.push(row.review);
+            });
+            console.log(helpful);
+            app.vue.helpful = helpful;
         });
     };
 

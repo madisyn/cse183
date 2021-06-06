@@ -38,7 +38,14 @@ db.define_table(
     Field('name', 'string'),
     Field('description', 'string'),
     Field('date_posted', 'datetime', default=get_time),
-    Field('email', 'string'),
+    Field('email', 'string', default=get_user_email),
+    Field('review_count', 'integer', default=0),
+    Field('avg_rating', 'integer', requires=IS_INT_IN_RANGE(0, 5), default=0),
+    Field('avg_noise', 'integer', requires=IS_INT_IN_RANGE(0, 5), default=0),
+    Field('avg_people', 'integer', requires=IS_INT_IN_RANGE(0, 5), default=0),
+    Field('avg_atmosphere', 'integer', requires=IS_INT_IN_RANGE(0, 5), default=0),
+    Field('avg_cry', 'integer', requires=IS_INT_IN_RANGE(0, 5), default=0),
+    Field('tags', 'list:string', default=[]),
 )
 
 db.define_table(
@@ -53,6 +60,14 @@ db.define_table(
     Field('helpful_count', 'integer', default=0),
     Field('date_posted', default=get_time),
     Field('username', default=get_username),
+    Field('email', default=get_user_email),
+    Field('user', 'reference auth_user', default=get_user),
+)
+
+db.define_table(
+    'helpful',
+    Field('review', 'reference review', ondelete="CASCADE"),
+    Field('email', default=get_user_email),
     Field('user', 'reference auth_user', default=get_user),
 )
 

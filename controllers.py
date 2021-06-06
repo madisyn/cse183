@@ -50,6 +50,7 @@ def index():
         delete_location_url = URL('delete_location', signer=url_signer),
         location_url = URL('location'),
         add_username_url = URL('add_username', signer=url_signer),
+        add_review_url = URL('add_review', signer=url_signer),
     )
 
 @action('signup')
@@ -70,6 +71,10 @@ def location(loc_id=None):
         get_location_url = URL('get_location', signer=url_signer),
         get_reviews_url =URL('get_reviews', signer=url_signer),
         add_review_url = URL('add_review', signer=url_signer),
+        delete_review_url = URL('delete_review', signer=url_signer),
+        get_user_helpful_url = URL('get_user_helpful', signer=url_signer),
+        add_helpful_url = URL('add_helpful', signer=url_signer),
+        delete_helpful_url = URL('delete_helpful', signer=url_signer),
     )
 
 # API FUNCTIONS ----------------------------------------------------------
@@ -125,6 +130,58 @@ def delete_location():
     db(db.location.id == id).delete()
     return "ok"
 
+def update_reviews(loc_id):
+    reviews = db(db.review.location == loc_id).select().as_list()
+    num_reviews = len(reviews)
+
+    if num_reviews == 0:
+        updated = dict(
+            review_count=0,
+            avg_rating=0,
+            avg_noise=0,
+            avg_people=0,
+            avg_atmosphere=0,
+            avg_cry=0,
+            tags=[],
+        )
+    else:
+        # get average reviews
+        avg_noise = sum(review['noise_rating'] for review in reviews) / num_reviews
+        avg_people = sum(review['people_rating'] for review in reviews) / num_reviews
+        avg_atmosphere = sum(review['atmosphere_rating'] for review in reviews) / num_reviews
+        avg_cry = sum(review['cry_rating'] for review in reviews) / num_reviews
+        avg_rating = (avg_atmosphere + avg_cry) / 2
+
+        tags = []
+        # generate noise tags
+        if (avg_noise < 2):
+            tags.append("peaceful")
+        elif (avg_noise < 4):
+            tags.append("mild noise")
+        else:
+            tags.append("vibrant")
+        # generate people tags
+        if (avg_people < 2):
+            tags.append("uncrowded")
+        elif(avg_people < 4):
+            tags.append("somewhat crowded")
+        else:
+            tags.append("crowded")
+
+        updated = dict(
+            review_count=num_reviews,
+            avg_rating=round(avg_rating),
+            avg_noise=round(avg_noise),
+            avg_people=round(avg_people),
+            avg_atmosphere=round(avg_atmosphere),
+            avg_cry=round(avg_cry),
+            tags=tags,
+        )
+    
+    # update
+    db.location[loc_id] = updated
+    return updated
+
 # REVIEWS
 
 @action('get_reviews', method="GET")
@@ -151,77 +208,52 @@ def add_review():
         username=username,
         user=user,
     )
-    return dict(id=id, date_posted=date, username=username)
+    updated = update_reviews(request.json.get('location'))
+    return dict(id=id, date_posted=date, username=username, updated=updated)
 
-# @action('add_review/<location_title:int>', method=["GET", "POST"])
-# @action.uses(db, session, auth.user, 'add_review.html')
-# def add_review(title=None):
-#     assert title is not None
-#     name = db.location[title]
-#     data = db(db.Location.title == title)
-#     assert data is not None
-#     form = Form([Field('Noise Rating'), Field('People Rating'), Field('Atmosphere Rating'),
-#     Field('Cry Rating'), Field('Comments'),],
-#                 csrf_session=session,
-#                 formstyle=FormStyleBulma                
-#                 )
-#     if form.accepted:
-#         db.weep_reviews.insert(
-#             title = title,
-#             review_id = db.user_profiles.user_id,
-#             noise_rating = form.vars['Noise Rating'],
-#             people_rating = form.vars['People Rating'],
-#             atmosphere_rating = form.vars['Atmosphere Rating'],
-#             cry_rating = form.vars['Cry Rating'],
-#             additional_comments = form.vars['Comments'],
-#         )
-#         redirect(URL('index'))
-#     return dict(form=form, name=name)
+@action('delete_review')
+@action.uses(url_signer.verify(), db, auth)
+def delete_review():
+    id = request.params.get('id')
+    assert id is not None
+    db(db.review.id == id).delete()
+    updated = update_reviews(request.params.get('location'))
+    return dict(updated=updated)
 
+# HELPFUL
 
-# @action('edit_review/<location_title:int>/<review_id:int>', method=["GET", "POST"])
-# @action.uses(db, session, auth.user, url_signer.verify(), 'edit_review.html')
-# def edit_review(location_title=None, review_id=None, title=None):
-#     assert location_title is not None
-#     assert review_id is not None
-#     assert title is not None
-#     p = db(
-#         (db.review.id == review_id) &
-#         (db.location.title == location_title) &
-#         (db.weep_review.review_id == db.user_profiles.user_id)
-#         ).select().first()
-#     if p is None:
-#         redirect(URL('index'))
-#     name = db.location[title]
-#     form = Form([Field('Noise Rating'), Field('People Rating'), Field('Atmosphere Rating'),
-#     Field('Cry Rating'), Field('Comments'),],
-#             record=dict(noise=p.weep_reviews.noise_rating, people=p.weep_reviews.people_rating,
-#             atmosphere=p.weep_reviews.atmosphere_rating, cry=p.weep_reviews.cry_rating,
-#             acomments=p.weep_reviews.additional_comments,), 
-#             deletable=False, 
-#             csrf_session=session, 
-#             formstyle=FormStyleBulma)
-#     if form.accepted:
-#         p.weep_reviews.update_record(
-#         noise_rating = form.vars['Noise Rating'], 
-#         people_rating = form.vars['People Rating'],
-#         atmosphere_rating = form.vars['Atmosphere Rating'], 
-#         cry_rating = form.vars['Cry Rating'],
-#         additional_comments = form.vars['Comments'],)
-#         redirect(URL('index'))
-#     return dict(form=form, name=name)
+@action('get_user_helpful')
+@action.uses(url_signer.verify(), db, auth)
+def get_user_helpful():
+    rows = db(db.helpful.user == get_user()).select().as_list()
+    return dict(helpful=rows)
 
-# @action('delete_review/<location_title:int>/<review_id:int>', method=["GET", "POST"])
-# @action.uses(db, session, auth.user, url_signer.verify())
-# def edit_phone(title=None, review_id=None):
-#     assert title is not None
-#     assert review_id is not None
-#     p = db(
-#         (db.review.id == review_id) &
-#         (db.title.id == title) &
-#         (db.weep_reviews.review_id == title)
-#         ).select().first()
-#     if p is None:
-#         redirect(URL('index'))
-#     p.weep_reviews.delete_record()
-#     redirect(URL('index'))
+@action('add_helpful', method="POST")
+@action.uses(url_signer.verify(), db, auth)
+def add_helpful():
+    review_id = request.json.get('id')
+    user = get_user()
+    email = get_user_email()
+    id = db.helpful.insert(
+        review=review_id,
+        email=email,
+        user=user,
+    )
+    new_count = db.review[review_id].helpful_count + 1
+    db.review[review_id] = dict(
+        helpful_count=new_count,
+    )
+    return dict(count=new_count)
+
+@action('delete_helpful')
+@action.uses(url_signer.verify(), db, auth)
+def delete_helpful():
+    review_id = request.params.get('id')
+    email = request.params.get('email')
+    assert review_id is not None
+    db((db.helpful.review == review_id) & (db.helpful.email == email)).delete()
+    new_count = db.review[review_id].helpful_count - 1
+    db.review[review_id] = dict(
+        helpful_count=new_count,
+    )
+    return dict(count=new_count)

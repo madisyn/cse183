@@ -63,7 +63,15 @@ p.review-preview {
 
 .location-card {
     margin-top: 1.5rem;
-    cursor: pointer
+}
+
+.button.review-button {
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 4px;
+    border-bottom-left-radius: 0px;
+    width: 100%;
+    height: 100%;
 }
 
 </style>
@@ -82,11 +90,12 @@ p.review-preview {
             <div class="modal-background"></div>
             <div class="modal-card">
                 <header class="modal-card-head">
-                    <p class="modal-card-title">Add Location</p>
+                    <p class="modal-card-title">Create a Post</p>
                     <button class="delete" aria-label="close" @click="set_add_modal()"></button>
                 </header>
                 <section class="modal-card-body">
                     <div class="content">
+                        <h3>New Location</h3>
                         <div class="field">
                             <label class="label">Name</label>
                             <div class="control">
@@ -96,7 +105,48 @@ p.review-preview {
                         <div class="field">
                             <div class="control">
                                 <label class="label">Description</label>
-                                <input class="input" type="text" placeholder="Description here..." v-model="location_desc">
+                                <textarea class="textarea" placeholder="Describe how to find the location..." v-model="location_desc"></textarea>
+                            </div>
+                        </div>
+                        <h3>Your Review</h3>
+                        <div class="field">
+                            <div class="control">
+                                <label class="label">
+                                    Cry Quality
+                                </label>
+                                <input class="input" type="number" min="0" max="5" v-model="cry_rating">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <label class="label">
+                                    Atmosphere Rating
+                                </label>
+                                <input class="input" type="number" min="0" max="5" v-model="atmos_rating">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <label class="label">
+                                    Noise Rating
+                                    <i class="label-exp">(0 being quiet, 5 being loud)</i>
+                                </label>
+                                <input class="input" type="number" min="0" max="5" v-model="noise_rating">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <label class="label">
+                                    Amount of People
+                                    <i class="label-exp">(0 being no people, 5 being a lot of people)</i>
+                                </label>
+                                <input class="input" type="number" min="0" max="5" v-model="ppl_rating">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <label class="label">Your Review</label>
+                                <textarea class="textarea" placeholder="Your review here..." v-model="review_content"></textarea>
                             </div>
                         </div>
                     </div>
@@ -146,19 +196,19 @@ p.review-preview {
             </div>
             <div class="control column">
                 <button
-                    v-if="filter !== 'rising'"
+                    v-if="filter !== 'my_posts'"
                     class="button is-info is-light is-wide"
-                    @click="change_filter('rising')"
+                    @click="change_filter('my_posts')"
                 >
                     <span class="icon"><i class="fa fa-arrow-up"></i></span>
-                    <span>Rising</span>
+                    <span>My Posts</span>
                 </button>
                 <button
-                    v-if="filter === 'rising'"
+                    v-if="filter === 'my_posts'"
                     class="button is-info is-light is-wide is-outlined"
                 >
                     <span class="icon"><i class="fa fa-arrow-up"></i></span>
-                    <span>Rising</span>
+                    <span>My Posts</span>
                 </button>
             </div>
         </div>
@@ -170,7 +220,10 @@ p.review-preview {
 
         <!-- posts -->
         <div v-for="p in posts">
-            <div class="card is-horizontal location-card" @click="open_location(this, p.id)" >
+            <div
+                v-if="filter !== 'my_posts' || (filter === 'my_posts' && p.email === user_email)"
+                class="card is-horizontal location-card"
+            >
                 <div class="card-image">
                     <figure class="image is-square">
                     <img src="https://images7.alphacoders.com/303/303995.jpg" alt="Placeholder image">
@@ -181,32 +234,30 @@ p.review-preview {
                         <div class="content">
                             <div class="columns" style="margin-bottom: 0rem;">
                                 <h2 class="column is-11" style="margin-bottom: 0.25rem;">{{p.name}}</h2>
-                                <span class="column is-1 has-text-danger" v-if="user_email==p.email">
+                                <span class="column is-1 has-text-danger" v-if="user_email===p.email">
                                     <i class="fa fa-trash fa-lg" @click="delete_post(p._idx)" style="cursor: pointer;"></i>
                                 </span>
                             </div>
-                            <div class="rating">
-                                <span class="icon has-text-link"><i class="fa fa-circle fa-lg"></i></span>
-                                <span class="icon has-text-link"><i class="fa fa-circle fa-lg"></i></span>
-                                <span class="icon has-text-link"><i class="fa fa-circle fa-lg"></i></span>
-                                <span class="icon has-text-link"><i class="fa fa-circle fa-lg"></i></span>
-                                <span class="icon has-text-link"><i class="fa fa-circle-o fa-lg"></i></span>
-                                <span class="review-count has-text-grey-dark">23</span>
+                            <div class="desc-rating">
+                                <span class="icon has-text-link" v-for="star_idx in [1, 2, 3, 4, 5]">
+                                    <i v-if="star_idx <= p.avg_rating" class="fa fa-circle fa-lg"></i>
+                                    <i v-if="star_idx > p.avg_rating" class="fa fa-circle-o fa-lg"></i>
+                                </span>
+                                <span class="review-count has-text-grey-dark">{{p.review_count}}</span>
                             </div>
                             <p class="review-preview">{{p.description}}</p>
                         </div>
                         <div class="field is-grouped">
-                            <div class="control">
-                                <span class="tag is-light is-rounded">example tag</span>
-                            </div>
-                            <div class="control">
-                                <span class="tag is-light is-rounded">example tag</span>
-                            </div>
-                            <div class="control">
-                                <span class="tag is-light is-rounded">example tag</span>
+                            <div class="control" v-for="t in p.tags">
+                                <span class="tag is-light is-rounded">{{t}}</span>
                             </div>
                         </div>
                     </div>
+                    <footer class="card-footer">
+                        <button class="button is-link is-light review-button" @click="open_location(this, p.id)">
+                            See Reviews
+                        </button>
+                    </footer>
                 </div>
             </div>
         </div>
@@ -221,7 +272,8 @@ p.review-preview {
     let add_location_url = "[[=XML(add_location_url)]]";
     let get_locations_url = "[[=XML(get_locations_url)]]";
     let delete_location_url = "[[=XML(delete_location_url)]]";
-    let location_url = "[[=XML(location_url)]]"
+    let location_url = "[[=XML(location_url)]]";
+    let add_review_url = "[[=XML(add_review_url)]]"
 </script>
 <script src="js/index.js"></script>
 [[end]]

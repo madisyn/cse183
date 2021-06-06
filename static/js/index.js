@@ -12,6 +12,11 @@ let init = (app) => {
         show_add_modal: false,
         location_name: "",
         location_desc: "",
+        cry_rating: 0,
+        atmos_rating: 0,
+        noise_rating: 0,
+        ppl_rating: 0,
+        review_content: "",
         posts: [],
         filter: "top",
     };
@@ -33,6 +38,11 @@ let init = (app) => {
     app.reset_add_form = function () {
         app.vue.location_name = "";
         app.vue.location_desc = "";
+        app.vue.cry_rating = 0;
+        app.vue.atmos_rating = 0;
+        app.vue.noise_rating = 0;
+        app.vue.ppl_rating = 0;
+        app.vue.review_content = "";
     }
 
     app.add_post = function () {
@@ -40,17 +50,38 @@ let init = (app) => {
             {
                 name: app.vue.location_name,
                 description: app.vue.location_desc,
-            }).then(function (response) {
-            app.vue.posts.unshift({
-                id: response.data.id,
-                name: app.vue.location_name,
-                description: app.vue.location_desc,
-                email: app.vue.user_email,
+            }).then(function (loc_response) {
+
+            // add review
+            axios.post(add_review_url,
+                {
+                    location: loc_response.data.id,
+                    cry: app.vue.cry_rating,
+                    atmosphere: app.vue.atmos_rating,
+                    noise: app.vue.noise_rating,
+                    people: app.vue.ppl_rating,
+                    comment: app.vue.review_content,
+                }).then(function (response) {
+
+                app.vue.posts.unshift({
+                    id: loc_response.data.id,
+                    name: app.vue.location_name,
+                    description: app.vue.location_desc,
+                    email: app.vue.user_email,
+                    review_count: response.data.updated.review_count,
+                    avg_rating: response.data.updated.avg_rating,
+                    avg_noise: response.data.updated.avg_noise,
+                    avg_people: response.data.updated.avg_people,
+                    avg_atmosphere: response.data.updated.avg_atmosphere,
+                    avg_cry: response.data.updated.avg_cry,
+                    tags: response.data.updated.tags,
+                });
+                app.apply_filter();
+                app.enumerate(app.vue.posts);
+                
+                app.reset_add_form();
+                app.set_add_modal();
             });
-            app.apply_filter();
-            app.enumerate(app.vue.posts);
-            app.reset_add_form();
-            app.set_add_modal();
         });
     }
 
@@ -77,7 +108,12 @@ let init = (app) => {
     }
 
     app.apply_filter = function () {
-        // TODO
+        if (app.vue.filter === 'top') {
+            app.vue.posts.sort((a, b) => (a.avg_rating > b.avg_rating) ? -1 : 1);
+        }
+        else if (app.vue.filter === 'new') {
+            app.vue.posts.sort((a, b) => (a.date_posted.localeCompare(b.date_posted) === 1) ? -1 : 1);
+        }
     }
 
     // We form the dictionary of all methods, so we can assign them
