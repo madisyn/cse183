@@ -75,6 +75,8 @@ def location(loc_id=None):
         get_user_helpful_url = URL('get_user_helpful', signer=url_signer),
         add_helpful_url = URL('add_helpful', signer=url_signer),
         delete_helpful_url = URL('delete_helpful', signer=url_signer),
+        file_upload_url = URL('file_upload', signer=url_signer),
+        upload_image_url = URL('upload_image', signer=url_signer),
     )
 
 # API FUNCTIONS ----------------------------------------------------------
@@ -210,6 +212,8 @@ def add_review():
     )
     updated = update_reviews(request.json.get('location'))
     return dict(id=id, date_posted=date, username=username, updated=updated)
+    # return dict(id=id, date_posted=date, username=username,
+    # file_upload_url = URL('file_upload', signer=url_signer),)
 
 @action('delete_review')
 @action.uses(url_signer.verify(), db, auth)
@@ -219,6 +223,27 @@ def delete_review():
     db(db.review.id == id).delete()
     updated = update_reviews(request.params.get('location'))
     return dict(updated=updated)
+
+# IMAGES
+
+@action('file_upload', method="PUT")
+@action.uses() # Add here things you might want to use.
+def file_upload():
+    file_name = request.params.get("file_name")
+    file_type = request.params.get("file_type")
+    uploaded_file = request.body # This is a file, you can read it.
+    # Diagnostics
+    print("Uploaded", file_name, "of type", file_type)
+    print("Content:", uploaded_file.read())
+    return "ok"
+
+@action('upload_image', method="POST")
+@action.uses(url_signer.verify(), db)
+def upload_image():
+    review_id = request.json.get("review_id")
+    image = request.json.get("image")
+    db(db.review.id == review_id).update(image=image)
+    return "ok"
 
 # HELPFUL
 

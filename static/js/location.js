@@ -29,7 +29,15 @@ let init = (app) => {
         reviews: [],
         filter: "top",
         helpful: [],
+        selection_done: false,
+        uploading: false,
+        uploaded_file: "",
+        uploaded: false,
+        image_url: "",
     };
+
+    // This is the file selected for upload.
+    app.file = null;
 
     app.enumerate = (a) => {
         // This adds an _idx field to each element of the array.
@@ -53,7 +61,7 @@ let init = (app) => {
         app.vue.review_content = "";
     }
 
-    app.add_review = function () {
+    app.add_review = function (event) {
         axios.post(add_review_url,
             {
                 location: app.vue.loc_id,
@@ -85,6 +93,7 @@ let init = (app) => {
             app.vue.tags = response.data.updated.tags;
 
             app.apply_filter();
+            app.upload_file(event ,response.data.id);
             app.reset_add_form();
             app.set_add_modal();
         });
@@ -93,7 +102,6 @@ let init = (app) => {
     app.delete_review = function (review_idx) {
         let id = app.vue.reviews[review_idx].id;
         axios.get(delete_review_url, {params: {id: id, location: loc_id}}).then(function (response) {
-            console.log(response.data);
             for (let i = 0; i < app.vue.reviews.length; i++) {
                 if (app.vue.reviews[i].id === id) {
                     app.vue.reviews.splice(i, 1);
@@ -162,6 +170,49 @@ let init = (app) => {
         }
     }
 
+    app.select_file = function (event) {
+        // Reads the file.
+        let input = event.target;
+        app.file = input.files[0];
+        if (app.file) {
+            app.vue.selection_done = true;
+            // We read the file.
+            let reader = new FileReader();
+            reader.addEventListener("load", function () {
+                app.vue.image_url = reader.result;
+            });
+            reader.readAsDataURL(app.file);
+        }
+    };
+
+    app.upload_complete = function (file_name, file_type) {
+        app.vue.uploading = false;
+        app.vue.uploaded = true;
+    };
+
+    app.upload_file = function (event, review_idx) {
+        let input = event.target;
+        let file = input.files;
+        let review = app.vue.reviews[review_idx];
+        if (file) {
+            let reader = new FileReader();
+            reader.addEventListener("load", function () {
+                // Sends the image to the server.
+                axios.post(upload_image_url,
+                    {
+                        review_id: review.id,
+                        image: reader.result,
+                    })
+                    .then(function (response) {
+                        // Sets the local preview.
+                        review.image = reader.result;
+
+                    });
+            });
+            reader.readAsDataURL(file);
+        }
+    };
+
     // We form the dictionary of all methods, so we can assign them
     // to the Vue app in a single blow.
     app.methods = {
@@ -172,6 +223,8 @@ let init = (app) => {
         delete_review: app.delete_review,
         parse_date: app.parse_date,
         change_helpful: app.change_helpful,
+        select_file: app.select_file,
+        upload_file: app.upload_file,
     };
 
     // This creates the Vue instance.
@@ -211,7 +264,6 @@ let init = (app) => {
             response.data.helpful.forEach(function (row) {
                 helpful.push(row.review);
             });
-            console.log(helpful);
             app.vue.helpful = helpful;
         });
     };

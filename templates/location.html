@@ -212,10 +212,32 @@
                                 <textarea class="textarea" placeholder="Your review here..." v-model="review_content"></textarea>
                             </div>
                         </div>
+                        <div v-if="!selection_done" class="field has-addons block">
+                            <p class="control">
+                                <div class="file is-info">
+                                    <label class="file-label">
+                                    <input class="file-input" type="file"
+                                            accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*"
+                                            @change="select_file($event)">
+                                    <span class="file-cta">
+                                        <span class="file-label">
+                                        <span>Upload Image</span>
+                                        </span>
+                                    </span>
+                                    </label>
+                                </div>
+                            </p>
+                        </div>
+                        <template v-if="selection_done && !uploaded">
+                        <div class="block">
+                            <img width="400" :src="image_url" />
+                        </div>
+
+                        </template>
                     </div>
                 </section>
                 <footer class="modal-card-foot">
-                    <button class="button is-info" @click="add_review()">Add Review</button>
+                    <button class="button is-info" @click="add_review($event)">Add Review</button>
                     <button class="button" @click="set_add_modal()">Cancel</button>
                 </footer>
             </div>
@@ -390,8 +412,10 @@
     let add_review_url = "[[=XML(add_review_url)]]";
     let delete_review_url = "[[=XML(delete_review_url)]]";
     let get_user_helpful_url = "[[=XML(get_user_helpful_url)]]";
-    let add_helpful_url = "[[=XML(add_helpful_url)]]"
-    let delete_helpful_url = "[[=XML(delete_helpful_url)]]"
+    let add_helpful_url = "[[=XML(add_helpful_url)]]";
+    let delete_helpful_url = "[[=XML(delete_helpful_url)]]";
+    let file_upload_url = "[[=XML(file_upload_url)]]";
+    let upload_image_url = "[[=XML(upload_image_url)]]";
 </script>
 <script src="js/location.js"></script>
 [[end]]
