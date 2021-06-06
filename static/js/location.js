@@ -85,7 +85,6 @@ let init = (app) => {
             app.vue.tags = response.data.updated.tags;
 
             app.apply_filter();
-            app.enumerate(app.vue.reviews);
             app.reset_add_form();
             app.set_add_modal();
         });
@@ -98,7 +97,6 @@ let init = (app) => {
             for (let i = 0; i < app.vue.reviews.length; i++) {
                 if (app.vue.reviews[i].id === id) {
                     app.vue.reviews.splice(i, 1);
-                    app.enumerate(app.vue.reviews);
                     break;
                 }
             }
@@ -110,6 +108,8 @@ let init = (app) => {
             app.vue.avg_atmosphere = response.data.updated.avg_atmosphere;
             app.vue.avg_cry = response.data.updated.avg_cry;
             app.vue.tags = response.data.updated.tags;
+            // sort for filters
+            app.apply_filter();
         });
     }
 
@@ -127,7 +127,13 @@ let init = (app) => {
     }
 
     app.apply_filter = function () {
-        // TODO
+        if (app.vue.filter === 'top') {
+            app.vue.reviews.sort((a, b) => (a.helpful_count > b.helpful_count) ? -1 : 1);
+        }
+        else if (app.vue.filter === 'new') {
+            app.vue.reviews.sort((a, b) => (a.date_posted.localeCompare(b.date_posted) === 1) ? -1 : 1);
+        }
+        app.enumerate(app.vue.reviews);
     }
 
     app.change_helpful = function (idx) {
@@ -207,7 +213,7 @@ let init = (app) => {
             });
             console.log(helpful);
             app.vue.helpful = helpful;
-        })
+        });
     };
 
     // Call to the initializer.

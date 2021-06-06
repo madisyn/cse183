@@ -108,7 +108,12 @@ let init = (app) => {
     }
 
     app.apply_filter = function () {
-        // TODO
+        if (app.vue.filter === 'top') {
+            app.vue.posts.sort((a, b) => (a.avg_rating > b.avg_rating) ? -1 : 1);
+        }
+        else if (app.vue.filter === 'new') {
+            app.vue.posts.sort((a, b) => (a.date_posted.localeCompare(b.date_posted) === 1) ? -1 : 1);
+        }
     }
 
     // We form the dictionary of all methods, so we can assign them
