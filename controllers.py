@@ -50,6 +50,7 @@ def index():
         delete_location_url = URL('delete_location', signer=url_signer),
         location_url = URL('location'),
         add_username_url = URL('add_username', signer=url_signer),
+        add_review_url = URL('add_review', signer=url_signer),
     )
 
 @action('signup')

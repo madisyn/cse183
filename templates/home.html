@@ -90,11 +90,12 @@ p.review-preview {
             <div class="modal-background"></div>
             <div class="modal-card">
                 <header class="modal-card-head">
-                    <p class="modal-card-title">Add Location</p>
+                    <p class="modal-card-title">Create a Post</p>
                     <button class="delete" aria-label="close" @click="set_add_modal()"></button>
                 </header>
                 <section class="modal-card-body">
                     <div class="content">
+                        <h3>New Location</h3>
                         <div class="field">
                             <label class="label">Name</label>
                             <div class="control">
@@ -104,7 +105,48 @@ p.review-preview {
                         <div class="field">
                             <div class="control">
                                 <label class="label">Description</label>
-                                <input class="input" type="text" placeholder="Description here..." v-model="location_desc">
+                                <textarea class="textarea" placeholder="Describe how to find the location..." v-model="location_desc"></textarea>
+                            </div>
+                        </div>
+                        <h3>Your Review</h3>
+                        <div class="field">
+                            <div class="control">
+                                <label class="label">
+                                    Cry Quality
+                                </label>
+                                <input class="input" type="number" min="0" max="5" v-model="cry_rating">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <label class="label">
+                                    Atmosphere Rating
+                                </label>
+                                <input class="input" type="number" min="0" max="5" v-model="atmos_rating">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <label class="label">
+                                    Noise Rating
+                                    <i class="label-exp">(0 being quiet, 5 being loud)</i>
+                                </label>
+                                <input class="input" type="number" min="0" max="5" v-model="noise_rating">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <label class="label">
+                                    Amount of People
+                                    <i class="label-exp">(0 being no people, 5 being a lot of people)</i>
+                                </label>
+                                <input class="input" type="number" min="0" max="5" v-model="ppl_rating">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <label class="label">Your Review</label>
+                                <textarea class="textarea" placeholder="Your review here..." v-model="review_content"></textarea>
                             </div>
                         </div>
                     </div>
@@ -230,7 +272,8 @@ p.review-preview {
     let add_location_url = "[[=XML(add_location_url)]]";
     let get_locations_url = "[[=XML(get_locations_url)]]";
     let delete_location_url = "[[=XML(delete_location_url)]]";
-    let location_url = "[[=XML(location_url)]]"
+    let location_url = "[[=XML(location_url)]]";
+    let add_review_url = "[[=XML(add_review_url)]]"
 </script>
 <script src="js/index.js"></script>
 [[end]]
