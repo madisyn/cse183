@@ -185,25 +185,18 @@ p.review-preview {
                                     <i class="fa fa-trash fa-lg" @click="delete_post(p._idx)" style="cursor: pointer;"></i>
                                 </span>
                             </div>
-                            <div class="rating">
-                                <span class="icon has-text-link"><i class="fa fa-circle fa-lg"></i></span>
-                                <span class="icon has-text-link"><i class="fa fa-circle fa-lg"></i></span>
-                                <span class="icon has-text-link"><i class="fa fa-circle fa-lg"></i></span>
-                                <span class="icon has-text-link"><i class="fa fa-circle fa-lg"></i></span>
-                                <span class="icon has-text-link"><i class="fa fa-circle-o fa-lg"></i></span>
-                                <span class="review-count has-text-grey-dark">23</span>
+                            <div class="desc-rating">
+                                <span class="icon has-text-link" v-for="star_idx in [1, 2, 3, 4, 5]">
+                                    <i v-if="star_idx <= p.avg_rating" class="fa fa-circle fa-lg"></i>
+                                    <i v-if="star_idx > p.avg_rating" class="fa fa-circle-o fa-lg"></i>
+                                </span>
+                                <span class="review-count has-text-grey-dark">{{p.review_count}}</span>
                             </div>
                             <p class="review-preview">{{p.description}}</p>
                         </div>
                         <div class="field is-grouped">
-                            <div class="control">
-                                <span class="tag is-light is-rounded">example tag</span>
-                            </div>
-                            <div class="control">
-                                <span class="tag is-light is-rounded">example tag</span>
-                            </div>
-                            <div class="control">
-                                <span class="tag is-light is-rounded">example tag</span>
+                            <div class="control" v-for="t in p.tags">
+                                <span class="tag is-light is-rounded">{{t}}</span>
                             </div>
                         </div>
                     </div>

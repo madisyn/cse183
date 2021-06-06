@@ -154,6 +154,7 @@ def update_reviews(loc_id):
 
     # update
     updated = dict(
+        review_count=num_reviews,
         avg_rating=round(avg_rating),
         avg_noise=round(avg_noise),
         avg_people=round(avg_people),
@@ -193,4 +194,3 @@ def add_review():
     )
     updated = update_reviews(id)
     return dict(id=id, date_posted=date, username=username, updated=updated)
-    

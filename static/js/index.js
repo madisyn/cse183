@@ -46,6 +46,13 @@ let init = (app) => {
                 name: app.vue.location_name,
                 description: app.vue.location_desc,
                 email: app.vue.user_email,
+                review_count: 0,
+                avg_rating: 0,
+                avg_noise: 0,
+                avg_people: 0,
+                avg_atmosphere: 0,
+                avg_cry: 0,
+                tags: [],
             });
             app.apply_filter();
             app.enumerate(app.vue.posts);
@@ -108,7 +115,6 @@ let init = (app) => {
         })
         axios.get(get_locations_url).then(function (response) {
             app.vue.posts = app.enumerate(response.data.posts);
-            console.log(response.data.posts);
             app.apply_filter();
         });
     };

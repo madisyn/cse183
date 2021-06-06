@@ -13,6 +13,13 @@ let init = (app) => {
         name: "",
         description: "",
         poster: "",
+        review_count: 0,
+        avg_rating: 0,
+        avg_noise: 0,
+        avg_people: 0,
+        avg_atmosphere: 0,
+        avg_cry: 0,
+        tags: [],
         o_cry_rating: 0,
         o_atmos_rating: 0,
         o_noise_rating: 0,
@@ -126,6 +133,13 @@ let init = (app) => {
             app.vue.name = response.data.location.name;
             app.vue.description = response.data.location.description;
             app.vue.poster = response.data.location.email;
+            app.vue.review_count = response.data.location.review_count;
+            app.vue.avg_rating = response.data.location.avg_rating;
+            app.vue.avg_noise = response.data.location.avg_noise;
+            app.vue.avg_people = response.data.location.avg_people;
+            app.vue.avg_atmosphere = response.data.location.avg_atmosphere;
+            app.vue.avg_cry = response.data.location.avg_cry;
+            app.vue.tags = response.data.location.tags;
         });
         axios.get(get_reviews_url, {params: {loc_id: loc_id}}).then(function (response) {
             app.vue.reviews = app.enumerate(response.data.reviews);

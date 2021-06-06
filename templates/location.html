@@ -86,20 +86,14 @@
                     <h2 class="has-text-white">{{name}}</h2>
                     <div class="rating">
                         <span class="icon has-text-white" v-for="star_idx in [1, 2, 3, 4, 5]">
-                            <i v-if="star_idx <= 4" class="fa fa-circle fa-lg"></i>
-                            <i v-if="star_idx > 4" class="fa fa-circle-o fa-lg"></i>
+                            <i v-if="star_idx <= avg_rating" class="fa fa-circle fa-lg"></i>
+                            <i v-if="star_idx > avg_rating" class="fa fa-circle-o fa-lg"></i>
                         </span>
-                        <span class="review-count has-text-white">23</span>
+                        <span class="review-count has-text-white">{{review_count}}</span>
                     </div>
                     <div class="field is-grouped tag-group">
-                        <div class="control">
-                            <span class="tag is-light is-rounded">example tag</span>
-                        </div>
-                        <div class="control">
-                            <span class="tag is-light is-rounded">example tag</span>
-                        </div>
-                        <div class="control">
-                            <span class="tag is-light is-rounded">example tag</span>
+                        <div class="control" v-for="t in tags">
+                            <span class="tag is-light is-rounded">{{t}}</span>
                         </div>
                     </div>
                 </div>
@@ -124,15 +118,15 @@
                                 <i>Cry Quality</i>
                                 <div class="desc-rating">
                                     <span class="icon has-text-link" v-for="star_idx in [1, 2, 3, 4, 5]">
-                                        <i v-if="star_idx <= 4" class="fa fa-circle fa-lg"></i>
-                                        <i v-if="star_idx > 4" class="fa fa-circle-o fa-lg"></i>
+                                        <i v-if="star_idx <= avg_cry" class="fa fa-circle fa-lg"></i>
+                                        <i v-if="star_idx > avg_cry" class="fa fa-circle-o fa-lg"></i>
                                     </span>
                                 </div>
                                 <i>Atmosphere</i>
                                 <div class="desc-rating">
                                     <span class="icon has-text-link" v-for="star_idx in [1, 2, 3, 4, 5]">
-                                        <i v-if="star_idx <= 4" class="fa fa-circle fa-lg"></i>
-                                        <i v-if="star_idx > 4" class="fa fa-circle-o fa-lg"></i>
+                                        <i v-if="star_idx <= avg_atmosphere" class="fa fa-circle fa-lg"></i>
+                                        <i v-if="star_idx > avg_atmosphere" class="fa fa-circle-o fa-lg"></i>
                                     </span>
                                 </div>
                             </div>
@@ -140,15 +134,15 @@
                                 <i>Noise Level</i>
                                 <div class="desc-rating">
                                     <span class="icon has-text-link" v-for="star_idx in [1, 2, 3, 4, 5]">
-                                        <i v-if="star_idx <= 4" class="fa fa-circle fa-lg"></i>
-                                        <i v-if="star_idx > 4" class="fa fa-circle-o fa-lg"></i>
+                                        <i v-if="star_idx <= avg_noise" class="fa fa-circle fa-lg"></i>
+                                        <i v-if="star_idx > avg_noise" class="fa fa-circle-o fa-lg"></i>
                                     </span>
                                 </div>
                                 <i>Amount of People</i>
                                 <div class="desc-rating">
                                     <span class="icon has-text-link" v-for="star_idx in [1, 2, 3, 4, 5]">
-                                        <i v-if="star_idx <= 4" class="fa fa-circle fa-lg"></i>
-                                        <i v-if="star_idx > 4" class="fa fa-circle-o fa-lg"></i>
+                                        <i v-if="star_idx <= avg_people" class="fa fa-circle fa-lg"></i>
+                                        <i v-if="star_idx > avg_people" class="fa fa-circle-o fa-lg"></i>
                                     </span>
                                 </div>
                             </div>
