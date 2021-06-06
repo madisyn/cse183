@@ -255,31 +255,34 @@
             </div>
             <div class="control column">
                 <button
-                    v-if="filter !== 'rising'"
+                    v-if="filter !== 'my_reviews'"
                     class="button is-info is-light is-wide"
-                    @click="change_filter('rising')"
+                    @click="change_filter('my_reviews')"
                 >
                     <span class="icon"><i class="fa fa-arrow-up"></i></span>
-                    <span>Rising</span>
+                    <span>My Reviews</span>
                 </button>
                 <button
-                    v-if="filter === 'rising'"
+                    v-if="filter === 'my_reviews'"
                     class="button is-info is-light is-wide is-outlined"
                 >
                     <span class="icon"><i class="fa fa-arrow-up"></i></span>
-                    <span>Rising</span>
+                    <span>My Reviews</span>
                 </button>
             </div>
         </div>
 
         <!-- placeholder for reviews -->
         <div class="content" v-if="reviews.length == 0">
-            <i>No posts to show</i>
+            <i>No reviews to show</i>
         </div>
 
         <!-- review card -->
         <div v-for="r in reviews">
-            <div class="card review-card">
+            <div
+                v-if="filter !== 'my_reviews' || (filter === 'my_reviews' && r.email === user_email)"
+                class="card review-card"
+            >
                 <div class="card-content">
                     <div class="media">
                         <!-- user avatar (not implemented) -->
@@ -298,8 +301,6 @@
                                     <i class="fa fa-trash fa-lg" @click="delete_review(r._idx)" style="cursor: pointer;"></i>
                                 </span>
                             </div>
-                            <!-- <p class="title is-4">{{r.username}}</p>
-                            <p class="subtitle is-6">{{parse_date(r.date_posted)}}</p> -->
                         </div>
                     </div>
                     <div class="content">
