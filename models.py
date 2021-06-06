@@ -64,4 +64,11 @@ db.define_table(
     Field('user', 'reference auth_user', default=get_user),
 )
 
+db.define_table(
+    'helpful',
+    Field('review', 'reference review', ondelete="CASCADE"),
+    Field('email', default=get_user_email),
+    Field('user', 'reference auth_user', default=get_user),
+)
+
 db.commit()

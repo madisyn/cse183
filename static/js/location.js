@@ -28,7 +28,7 @@ let init = (app) => {
         review_content: "",
         reviews: [],
         filter: "top",
-        upvoted: true,
+        helpful: [],
     };
 
     app.enumerate = (a) => {
@@ -128,6 +128,32 @@ let init = (app) => {
         // TODO
     }
 
+    app.change_helpful = function (idx) {
+        let review_id = app.vue.reviews[idx].id;
+        // remove helpful
+        if (app.vue.helpful.includes(review_id)) {
+            axios.get(delete_helpful_url, {
+                params: {
+                    id: review_id,
+                    email: app.vue.user_email
+                }
+            }).then(function (response) {
+                app.vue.reviews[idx].helpful_count = response.data.count;
+                const index = app.vue.helpful.indexOf(review_id);
+                if (index > -1) {
+                    app.vue.helpful.splice(index, 1);
+                }
+            });
+        }
+        // add helpful
+        else {
+            axios.post(add_helpful_url, {id: review_id}).then(function (response) {
+                app.vue.reviews[idx].helpful_count = response.data.count;
+                app.vue.helpful.push(review_id);
+            });
+        }
+    }
+
     // We form the dictionary of all methods, so we can assign them
     // to the Vue app in a single blow.
     app.methods = {
@@ -137,6 +163,7 @@ let init = (app) => {
         add_review: app.add_review,
         delete_review: app.delete_review,
         parse_date: app.parse_date,
+        change_helpful: app.change_helpful,
     };
 
     // This creates the Vue instance.
@@ -171,6 +198,14 @@ let init = (app) => {
             app.vue.reviews = app.enumerate(response.data.reviews);
             app.apply_filter();
         });
+        axios.get(get_user_helpful_url).then(function (response) {
+            let helpful = [];
+            response.data.helpful.forEach(function (row) {
+                helpful.push(row.review);
+            });
+            console.log(helpful);
+            app.vue.helpful = helpful;
+        })
     };
 
     // Call to the initializer.

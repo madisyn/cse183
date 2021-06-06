@@ -73,6 +73,10 @@
     margin-top: 1.5rem;
 }
 
+.upvote {
+    cursor: pointer;
+}
+
 </style>
 
 <div class="section" id="vue-location" v-cloak>
@@ -355,14 +359,14 @@
                 </div>
                 <footer class="card-footer">
                     <div class="card-footer-item has-text-right">
-                        <div v-if="!upvoted">
-                            <span class="icon upvote">
+                        <div v-if="!helpful.includes(r.id)" class="upvote" v-on:click="change_helpful(r._idx)">
+                            <span class="icon">
                                 <i class="fa fa-angle-up fa-lg"></i>
                             </span>
                             <span>Helpful ({{r.helpful_count}})</span>
                         </div>
-                        <div v-if="upvoted">
-                            <span class="upvote has-text-info icon">
+                        <div v-if="helpful.includes(r.id)" class="upvote" v-on:click="change_helpful(r._idx)">
+                            <span class="has-text-info icon">
                                 <i class="fa fa-angle-up fa-lg"></i>
                             </span>
                             <span class="has-text-info">Helpful ({{r.helpful_count}})</span>
@@ -385,6 +389,9 @@
     let get_reviews_url = "[[=XML(get_reviews_url)]]";
     let add_review_url = "[[=XML(add_review_url)]]";
     let delete_review_url = "[[=XML(delete_review_url)]]";
+    let get_user_helpful_url = "[[=XML(get_user_helpful_url)]]";
+    let add_helpful_url = "[[=XML(add_helpful_url)]]"
+    let delete_helpful_url = "[[=XML(delete_helpful_url)]]"
 </script>
 <script src="js/location.js"></script>
 [[end]]

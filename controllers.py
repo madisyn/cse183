@@ -72,6 +72,9 @@ def location(loc_id=None):
         get_reviews_url =URL('get_reviews', signer=url_signer),
         add_review_url = URL('add_review', signer=url_signer),
         delete_review_url = URL('delete_review', signer=url_signer),
+        get_user_helpful_url = URL('get_user_helpful', signer=url_signer),
+        add_helpful_url = URL('add_helpful', signer=url_signer),
+        delete_helpful_url = URL('delete_helpful', signer=url_signer),
     )
 
 # API FUNCTIONS ----------------------------------------------------------
@@ -216,3 +219,41 @@ def delete_review():
     db(db.review.id == id).delete()
     updated = update_reviews(request.params.get('loc_id'))
     return dict(updated=updated)
+
+# HELPFUL
+
+@action('get_user_helpful')
+@action.uses(url_signer.verify(), db, auth)
+def get_user_helpful():
+    rows = db(db.helpful.user == get_user()).select().as_list()
+    return dict(helpful=rows)
+
+@action('add_helpful', method="POST")
+@action.uses(url_signer.verify(), db, auth)
+def add_helpful():
+    review_id = request.json.get('id')
+    user = get_user()
+    email = get_user_email()
+    id = db.helpful.insert(
+        review=review_id,
+        email=email,
+        user=user,
+    )
+    new_count = db.review[review_id].helpful_count + 1
+    db.review[review_id] = dict(
+        helpful_count=new_count,
+    )
+    return dict(count=new_count)
+
+@action('delete_helpful')
+@action.uses(url_signer.verify(), db, auth)
+def delete_helpful():
+    review_id = request.params.get('id')
+    email = request.params.get('email')
+    assert review_id is not None
+    db((db.helpful.review == review_id) & (db.helpful.email == email)).delete()
+    new_count = db.review[review_id].helpful_count - 1
+    db.review[review_id] = dict(
+        helpful_count=new_count,
+    )
+    return dict(count=new_count)
