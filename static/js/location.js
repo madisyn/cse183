@@ -73,6 +73,7 @@ let init = (app) => {
                 helpful_count: 0,
                 date_posted: response.data.date_posted,
                 username: response.data.username,
+                email: app.vue.user_email,
             });
             // update averages
             app.vue.review_count = response.data.updated.review_count;
@@ -93,6 +94,7 @@ let init = (app) => {
     app.delete_review = function (review_idx) {
         let id = app.vue.reviews[review_idx].id;
         axios.get(delete_review_url, {params: {id: id, location: loc_id}}).then(function (response) {
+            console.log(response.data);
             for (let i = 0; i < app.vue.reviews.length; i++) {
                 if (app.vue.reviews[i].id === id) {
                     app.vue.reviews.splice(i, 1);

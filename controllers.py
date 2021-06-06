@@ -217,7 +217,7 @@ def delete_review():
     id = request.params.get('id')
     assert id is not None
     db(db.review.id == id).delete()
-    updated = update_reviews(request.params.get('loc_id'))
+    updated = update_reviews(request.params.get('location'))
     return dict(updated=updated)
 
 # HELPFUL
