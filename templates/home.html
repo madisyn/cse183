@@ -181,7 +181,7 @@ p.review-preview {
                         <div class="content">
                             <div class="columns" style="margin-bottom: 0rem;">
                                 <h2 class="column is-11" style="margin-bottom: 0.25rem;">{{p.name}}</h2>
-                                <span class="column is-1 has-text-danger" v-if="user_email==p.email">
+                                <span class="column is-1 has-text-danger" v-if="user_email===p.email">
                                     <i class="fa fa-trash fa-lg" @click="delete_post(p._idx)" style="cursor: pointer;"></i>
                                 </span>
                             </div>

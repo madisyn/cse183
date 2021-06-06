@@ -70,6 +70,7 @@ def location(loc_id=None):
         get_location_url = URL('get_location', signer=url_signer),
         get_reviews_url =URL('get_reviews', signer=url_signer),
         add_review_url = URL('add_review', signer=url_signer),
+        delete_review_url = URL('delete_review', signer=url_signer),
     )
 
 # API FUNCTIONS ----------------------------------------------------------
@@ -127,43 +128,54 @@ def delete_location():
 
 def update_reviews(loc_id):
     reviews = db(db.review.location == loc_id).select().as_list()
-
-     # get average reviews
     num_reviews = len(reviews)
-    avg_noise = sum(review['noise_rating'] for review in reviews) / num_reviews
-    avg_people = sum(review['people_rating'] for review in reviews) / num_reviews
-    avg_atmosphere = sum(review['atmosphere_rating'] for review in reviews) / num_reviews
-    avg_cry = sum(review['cry_rating'] for review in reviews) / num_reviews
-    avg_rating = (avg_atmosphere + avg_cry) / 2
 
-    tags = []
-    # generate noise tags
-    if (avg_noise < 2):
-        tags.append("peaceful")
-    elif (avg_noise < 4):
-        tags.append("mild noise")
+    if num_reviews == 0:
+        updated = dict(
+            review_count=0,
+            avg_rating=0,
+            avg_noise=0,
+            avg_people=0,
+            avg_atmosphere=0,
+            avg_cry=0,
+            tags=[],
+        )
     else:
-        tags.append("vibrant")
-    # generate people tags
-    if (avg_people < 2):
-        tags.append("uncrowded")
-    elif(avg_people < 4):
-        tags.append("somewhat crowded")
-    else:
-        tags.append("crowded")
+        # get average reviews
+        avg_noise = sum(review['noise_rating'] for review in reviews) / num_reviews
+        avg_people = sum(review['people_rating'] for review in reviews) / num_reviews
+        avg_atmosphere = sum(review['atmosphere_rating'] for review in reviews) / num_reviews
+        avg_cry = sum(review['cry_rating'] for review in reviews) / num_reviews
+        avg_rating = (avg_atmosphere + avg_cry) / 2
 
+        tags = []
+        # generate noise tags
+        if (avg_noise < 2):
+            tags.append("peaceful")
+        elif (avg_noise < 4):
+            tags.append("mild noise")
+        else:
+            tags.append("vibrant")
+        # generate people tags
+        if (avg_people < 2):
+            tags.append("uncrowded")
+        elif(avg_people < 4):
+            tags.append("somewhat crowded")
+        else:
+            tags.append("crowded")
+
+        updated = dict(
+            review_count=num_reviews,
+            avg_rating=round(avg_rating),
+            avg_noise=round(avg_noise),
+            avg_people=round(avg_people),
+            avg_atmosphere=round(avg_atmosphere),
+            avg_cry=round(avg_cry),
+            tags=tags,
+        )
+    
     # update
-    updated = dict(
-        review_count=num_reviews,
-        avg_rating=round(avg_rating),
-        avg_noise=round(avg_noise),
-        avg_people=round(avg_people),
-        avg_atmosphere=round(avg_atmosphere),
-        avg_cry=round(avg_cry),
-        tags=tags,
-    )
     db.location[loc_id] = updated
-
     return updated
 
 # REVIEWS
@@ -192,5 +204,14 @@ def add_review():
         username=username,
         user=user,
     )
-    updated = update_reviews(id)
+    updated = update_reviews(request.json.get('location'))
     return dict(id=id, date_posted=date, username=username, updated=updated)
+
+@action('delete_review')
+@action.uses(url_signer.verify(), db, auth)
+def delete_review():
+    id = request.params.get('id')
+    assert id is not None
+    db(db.review.id == id).delete()
+    updated = update_reviews(request.params.get('loc_id'))
+    return dict(updated=updated)

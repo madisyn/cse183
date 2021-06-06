@@ -282,14 +282,24 @@
             <div class="card review-card">
                 <div class="card-content">
                     <div class="media">
-                        <div class="media-left">
+                        <!-- user avatar (not implemented) -->
+                        <!-- <div class="media-left">
                             <figure class="image is-48x48">
                                 <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
                             </figure>
-                        </div>
+                        </div> -->
                         <div class="media-content">
-                            <p class="title is-4">{{r.username}}</p>
-                            <p class="subtitle is-6">{{parse_date(r.date_posted)}}</p>
+                            <div class="columns" style="margin-bottom: 0rem;">
+                                <div class="column is-11">
+                                    <p class="title is-4">{{r.username}}</p>
+                                    <p class="subtitle is-6">{{parse_date(r.date_posted)}}</p>
+                                </div>
+                                <span class="column is-1 has-text-danger" v-if="user_email==r.email">
+                                    <i class="fa fa-trash fa-lg" @click="delete_review(r._idx)" style="cursor: pointer;"></i>
+                                </span>
+                            </div>
+                            <!-- <p class="title is-4">{{r.username}}</p>
+                            <p class="subtitle is-6">{{parse_date(r.date_posted)}}</p> -->
                         </div>
                     </div>
                     <div class="content">
@@ -373,6 +383,7 @@
     let get_location_url = "[[=XML(get_location_url)]]";
     let get_reviews_url = "[[=XML(get_reviews_url)]]";
     let add_review_url = "[[=XML(add_review_url)]]";
+    let delete_review_url = "[[=XML(delete_review_url)]]";
 </script>
 <script src="js/location.js"></script>
 [[end]]

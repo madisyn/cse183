@@ -69,20 +69,49 @@ let init = (app) => {
             }).then(function (response) {
             app.vue.reviews.unshift({
                 id: response.data.id,
-                cry: app.vue.cry_rating,
-                atmosphere: app.vue.atmos_rating,
-                noise: app.vue.noise_rating,
-                people: app.vue.ppl_rating,
+                cry_rating: app.vue.cry_rating,
+                atmosphere_rating: app.vue.atmos_rating,
+                noise_rating: app.vue.noise_rating,
+                people_rating: app.vue.ppl_rating,
                 comment: app.vue.review_content,
                 helpful_count: 0,
                 date_posted: response.data.date_posted,
                 username: response.data.username,
             });
-            console.log(response.data.date_posted);
+            // update averages
+            app.vue.review_count = response.data.updated.review_count;
+            app.vue.avg_rating = response.data.updated.avg_rating;
+            app.vue.avg_noise = response.data.updated.avg_noise;
+            app.vue.avg_people = response.data.updated.avg_people;
+            app.vue.avg_atmosphere = response.data.updated.avg_atmosphere;
+            app.vue.avg_cry = response.data.updated.avg_cry;
+            app.vue.tags = response.data.updated.tags;
+
             app.apply_filter();
             app.enumerate(app.vue.reviews);
             app.reset_add_form();
             app.set_add_modal();
+        });
+    }
+
+    app.delete_review = function (review_idx) {
+        let id = app.vue.reviews[review_idx].id;
+        axios.get(delete_review_url, {params: {id: id, location: loc_id}}).then(function (response) {
+            for (let i = 0; i < app.vue.reviews.length; i++) {
+                if (app.vue.reviews[i].id === id) {
+                    app.vue.reviews.splice(i, 1);
+                    app.enumerate(app.vue.reviews);
+                    break;
+                }
+            }
+            // update averages
+            app.vue.review_count = response.data.updated.review_count;
+            app.vue.avg_rating = response.data.updated.avg_rating;
+            app.vue.avg_noise = response.data.updated.avg_noise;
+            app.vue.avg_people = response.data.updated.avg_people;
+            app.vue.avg_atmosphere = response.data.updated.avg_atmosphere;
+            app.vue.avg_cry = response.data.updated.avg_cry;
+            app.vue.tags = response.data.updated.tags;
         });
     }
 
@@ -110,6 +139,7 @@ let init = (app) => {
         change_filter: app.change_filter,
         apply_filter: app.apply_filter,
         add_review: app.add_review,
+        delete_review: app.delete_review,
         parse_date: app.parse_date,
     };
 

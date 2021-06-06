@@ -117,6 +117,7 @@ let init = (app) => {
             app.vue.posts = app.enumerate(response.data.posts);
             app.apply_filter();
         });
+        console.log(user_email);
     };
 
     // Call to the initializer.
