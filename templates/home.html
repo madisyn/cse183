@@ -178,7 +178,10 @@ p.review-preview {
 
         <!-- posts -->
         <div v-for="p in posts">
-            <div class="card is-horizontal location-card" >
+            <div
+                v-if="filter !== 'my_posts' || (filter === 'my_posts' && p.email === user_email)"
+                class="card is-horizontal location-card"
+            >
                 <div class="card-image">
                     <figure class="image is-square">
                     <img src="https://images7.alphacoders.com/303/303995.jpg" alt="Placeholder image">
