@@ -108,6 +108,7 @@ let init = (app) => {
         })
         axios.get(get_locations_url).then(function (response) {
             app.vue.posts = app.enumerate(response.data.posts);
+            console.log(response.data.posts);
             app.apply_filter();
         });
     };

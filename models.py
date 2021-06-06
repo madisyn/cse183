@@ -39,6 +39,12 @@ db.define_table(
     Field('description', 'string'),
     Field('date_posted', 'datetime', default=get_time),
     Field('email', 'string'),
+    Field('avg_rating', 'integer', requires=IS_INT_IN_RANGE(0, 5), default=0),
+    Field('avg_noise', 'integer', requires=IS_INT_IN_RANGE(0, 5), default=0),
+    Field('avg_people', 'integer', requires=IS_INT_IN_RANGE(0, 5), default=0),
+    Field('avg_atmosphere', 'integer', requires=IS_INT_IN_RANGE(0, 5), default=0),
+    Field('avg_cry', 'integer', requires=IS_INT_IN_RANGE(0, 5), default=0),
+    Field('tags', 'list:string', default=[]),
 )
 
 db.define_table(
