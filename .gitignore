@@ -1,2 +1,7 @@
 /__pycache__
 /databases
+
+__pycache__/*
+databases/*
+private/*
+
