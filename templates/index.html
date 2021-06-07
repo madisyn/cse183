@@ -1,0 +1,83 @@
+[[extend 'layout.html']]
+
+[[block page_head]]
+<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lora" />
+[[end]]
+
+<style>
+    .weep-hero {
+        margin-bottom: 1rem;
+    }
+    .weep {
+        font-weight: 700;
+    }
+    .question {
+        font-family: Lora;
+        font-weight: 500;
+    }
+    .description {
+        font-size: 18px;
+        margin-bottom: 2rem;
+    }
+    .caps-link {
+        color: #3273dc;
+    }
+    .purpose-p {
+        margin-bottom: 1rem;
+    }
+</style>
+
+<div class="section">
+    <div class="container">
+        <section class="hero is-info weep-hero">
+            <div class="hero-body">
+                <div class="columns">
+                    <div class="column is-8">
+                        <p class="title weep">
+                            weep
+                        </p>
+                        <p class="title question">
+                            Looking for a place to cry on campus away from your roommates?
+                            Accidentally broke down during your final in Classroom Unit 2?
+                        </p>
+                        <p class="description">
+                            Post your beloved breakdown bench for others to see, find a place to wail in despair, and review the quality of your emotional workout with weep
+                        </p>
+                        <a class="button is-info is-light" href="[[=XML(home_url)]]">Go to Home Page</a>
+                    </div>
+                    <div class="column is-4">
+                        <p></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <article class="message is-info">
+            <div class="message-body">
+                See on-campus resources for mental health <a class="caps-link" href="https://caps.ucsc.edu/">here</a>.
+            </div>
+        </article>
+        <section class="hero is-light weep-hero">
+            <div class="hero-body">
+                <p class="title">
+                    Purpose
+                </p>
+                <p class="purpose-p">
+                    The purpose of Weep is to have a place for students to post their favorite crying spots and review their crying sessions on campus. College can be a very stressful time, and most of us will break down at one point in our time here at UCSC. This web app can serve multiple purposes:
+                </p>
+                <p class="purpose-p">
+                    Sometimes, crying in front of our peers can be very embarrassing, and finding a secluded place on campus to break down can be very helpful. However, our campus website doesn’t really cover this, and it’s oftentimes not a common question we ask our mentors and peers. Weep can provide a place to share these spots with each other, and provide students with safe havens to let their emotions out. Each of the reviews given by students will include ratings for how many people were around, the general noise level, and the atmosphere of the area to help students determine if the spot is right for them.
+                </p>
+                <p class="purpose-p">
+                    Another purpose of this website is to help students bond in shared emotional turmoil and vulnerability. Students have the option to rate how their cry went, and just let some things off of their chest anonymously on Weep. From flunking finals to going through a hard breakup, suffering through life always sucks less when you don’t have to do it alone.
+                </p>
+            </div>
+        </section>
+    </div>
+</div>
+
+[[block page_scripts]]
+<!-- Loads the index-specific js for Vue -->
+<script>
+    let home_url = "[[=XML(home_url)]]";
+</script>
+[[end]]
