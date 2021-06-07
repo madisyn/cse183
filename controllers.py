@@ -25,13 +25,32 @@ session, db, T, auth, and tempates are examples of Fixtures.
 Warning: Fixtures MUST be declared with @action.uses({fixtures}) else your app will result in undefined behavior
 """
 
+import datetime
+import json
+import os
+import traceback
+import uuid
+
 from py4web import action, request, abort, redirect, URL
 from yatl.helpers import A
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 from py4web.utils.url_signer import URLSigner
 from .models import get_user_email, get_username, get_user, get_time
 
+from nqgcs import NQGCS
+from .settings import APP_FOLDER
+from .gcs_url import gcs_url
+
 url_signer = URLSigner(session)
+
+BUCKET = '/weep-project'
+# GCS keys.  You have to create them for this to work.  See README.md
+GCS_KEY_PATH = os.path.join(APP_FOLDER, 'private/gcs_keys.json')
+with open(GCS_KEY_PATH) as gcs_key_f:
+    GCS_KEYS = json.load(gcs_key_f)
+
+# I create a handle to gcs, to perform the various operations.
+gcs = NQGCS(json_key_path=GCS_KEY_PATH)
 
 # SERVING PAGES ----------------------------------------------------------
 
@@ -52,6 +71,9 @@ def index():
         add_username_url = URL('add_username', signer=url_signer),
         add_review_url = URL('add_review', signer=url_signer),
         file_upload_url = URL('file_upload', signer=url_signer),
+        obtain_gcs_url = URL('obtain_gcs', signer=url_signer),
+        notify_upload_url = URL('notify_upload', signer=url_signer),
+        notify_delete_url = URL('notify_delete', signer=url_signer),
     )
 
 @action('signup')
@@ -96,6 +118,80 @@ def add_username():
 @action.uses(url_signer.verify(), db, auth)
 def get_email():
     return dict(email=get_user_email())
+
+# IMAGES
+
+@action('obtain_gcs', method="POST")
+@action.uses(url_signer.verify(), db)
+def obtain_gcs():
+    # Returns the URL to do download / upload / delete for GCS.
+    verb = request.json.get("action")
+    if verb == "PUT":
+        mimetype = request.json.get("mimetype", "")
+        file_name = request.json.get("file_name")
+        location = request.json.get("location")
+        extension = os.path.splitext(file_name)[1]
+        # Use + and not join for Windows, thanks Blayke Larue
+        file_path = BUCKET + "/" + str(uuid.uuid1()) + extension
+        # marks that the path may be used to upload a file.
+        mark_possible_upload(file_path, location)
+        upload_url = gcs_url(GCS_KEYS, file_path, verb='PUT',
+                             content_type=mimetype)
+        return dict(
+            signed_url=upload_url,
+            file_path=file_path
+        )
+    elif verb in ["GET", "DELETE"]:
+        file_path = request.json.get("file_path")
+        location = request.json.get("location")
+        if file_path is not None:
+            # check file_path
+            r = db(db.image.file_path == file_path).select().first()
+            if r is not None and r.location == location:
+                # let deletion happening
+                delete_url = gcs_url(GCS_KEYS, file_path, verb='DELETE')
+                return dict(signed_url=delete_url)
+        # return no url (deletion not authorized)
+        return dict(signer_url=None)
+
+@action('notify_upload', method="POST")
+@action.uses(url_signer.verify(), db)
+def notify_upload():
+    # file has been uploaded
+    file_path = request.json.get("file_path")
+    location = request.json.get("location")
+    print("File was uploaded:", file_path, file_name, file_type)
+    # confirms update
+    d = datetime.datetime.utcnow()
+    db.image.update_or_insert(
+        (db.image.location == location),
+        location=location,
+        file_path=file_path,
+        confirmed=True,
+    )
+    # returns the file information.
+    return dict(
+        download_url=gcs_url(GCS_KEYS, file_path, verb='GET'),
+    )
+
+@action('notify_delete', method="POST")
+@action.uses(url_signer.verify(), db)
+def notify_delete():
+    file_path = request.json.get("file_path")
+    location = request.json.get("location")
+    # prevent DDOS
+    db((db.image.location == location) &
+       (db.image.file_path == file_path)).delete()
+    return dict()
+
+def mark_possible_upload(file_path, location):
+    # file might be uploaded
+    delete_previous_uploads()
+    db.upload.insert(
+        location=location,
+        file_path=file_path,
+        confirmed=False,
+    )
 
 # LOCATION
 

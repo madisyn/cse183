@@ -49,6 +49,13 @@ db.define_table(
 )
 
 db.define_table(
+    'image',
+    Field('location', 'reference location', ondelete="CASCADE"),
+    Field('file_path'),
+    Field('confirmed', 'boolean', default=False), # Was the upload to GCS confirmed?
+)
+
+db.define_table(
     'review',
     Field('location', 'reference location', ondelete="CASCADE"),
     Field('noise_rating', 'integer', requires=IS_INT_IN_RANGE(0, 5)),
