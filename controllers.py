@@ -36,10 +36,17 @@ url_signer = URLSigner(session)
 # SERVING PAGES ----------------------------------------------------------
 
 @action('index')
-@action.uses(url_signer, auth, 'home.html')
+@action.uses(url_signer, auth, 'index.html')
 def index():
+    return dict(
+        home_url = URL('home'),
+    )
+
+@action('home')
+@action.uses(url_signer, auth, 'home.html')
+def home():
     if get_user_email() is None:
-        redirect(URL('auth/login'))
+        redirect(URL('auth/plugin/oauth2google/login', vars=dict(next='/home')))
     if get_username() is None:
         redirect(URL('signup'))
     return dict(
