@@ -39,7 +39,7 @@ url_signer = URLSigner(session)
 @action.uses(url_signer, auth, 'home.html')
 def index():
     if get_user_email() is None:
-        redirect(URL('auth/login'))
+        redirect(URL('auth/plugin/oauth2google/login'))
     if get_username() is None:
         redirect(URL('signup'))
     return dict(
