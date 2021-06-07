@@ -17,10 +17,12 @@ let init = (app) => {
         noise_rating: 0,
         ppl_rating: 0,
         review_content: "",
+        err: false,
+        err_msg: "",
         posts: [],
         filter: "top",
         selection_done: false,
-        uploaded: false, // TODO: called in frontend, not here
+        uploaded: false,
         image_url: "",
         test_image: null,
     };
@@ -49,7 +51,30 @@ let init = (app) => {
         app.vue.review_content = "";
     }
 
+    app.rating_in_range = function (num) {
+        return isInteger(num) && num >= 0 && num <= 5;
+    }
+
     app.add_post = function () {
+        // input sanitization
+        if (app.vue.location_name === ""
+            || app.vue.location_desc === ""
+            || app.vue.review_content === "") {
+            app.vue.err = true;
+            app.vue.err_msg = "Fields cannot be empty";
+            return;
+        }
+        else if (app.rating_in_range(app.vue.cry_rating)
+            || app.rating_in_range(app.vue.atmos_rating)
+            || app.rating_in_range(app.vue.noise_rating)
+            || app.rating_in_range(app.vue.ppl_rating)) {
+                app.vue.err = true;
+                app.vue.err_msg = "Ratings must be integers in the range 0 to 5";
+                return;
+        }
+
+        // input is all validated
+        app.vue.err = false;
         axios.post(add_location_url,
             {
                 name: app.vue.location_name,
