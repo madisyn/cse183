@@ -65,7 +65,7 @@ def home():
 @action.uses(db, auth, 'signup.html')
 def signup():
     return dict(
-        index_url = URL('index'),
+        home_url = URL('home'),
         add_username_url = URL('add_username', signer=url_signer),
     )
 
