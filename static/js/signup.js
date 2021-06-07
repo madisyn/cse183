@@ -23,7 +23,7 @@ let init = (app) => {
             {
                 username: app.vue.add_user_name
             }).then(function (response) {
-                object.location.href = home_url;
+                object.location.href = index_url;
                 app.reset_form();
             })
             
