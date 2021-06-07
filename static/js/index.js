@@ -19,6 +19,10 @@ let init = (app) => {
         review_content: "",
         posts: [],
         filter: "top",
+        selection_done: false,
+        uploaded: false, // TODO: called in frontend, not here
+        image_url: "",
+        test_image: null,
     };
 
     app.enumerate = (a) => {
@@ -63,24 +67,41 @@ let init = (app) => {
                     comment: app.vue.review_content,
                 }).then(function (response) {
 
-                app.vue.posts.unshift({
-                    id: loc_response.data.id,
-                    name: app.vue.location_name,
-                    description: app.vue.location_desc,
-                    email: app.vue.user_email,
-                    review_count: response.data.updated.review_count,
-                    avg_rating: response.data.updated.avg_rating,
-                    avg_noise: response.data.updated.avg_noise,
-                    avg_people: response.data.updated.avg_people,
-                    avg_atmosphere: response.data.updated.avg_atmosphere,
-                    avg_cry: response.data.updated.avg_cry,
-                    tags: response.data.updated.tags,
-                });
-                app.apply_filter();
-                app.enumerate(app.vue.posts);
-                
-                app.reset_add_form();
-                app.set_add_modal();
+                if (app.file) {
+                    let file_type = app.file.type;
+                    let file_name = app.file.name;
+                    app.vue.uploading = true;
+                    var formData = new FormData();
+                    formData.append("image", app.file);
+                    axios.post(file_upload_url, app.file).then(function (response2) {
+                        let reader = new FileReader();
+                        reader.addEventListener("load", function () {
+                            app.vue.test_image = reader.result;
+                            app.upload_complete(file_name, file_type);
+
+                            app.vue.posts.unshift({
+                                id: loc_response.data.id,
+                                name: app.vue.location_name,
+                                description: app.vue.location_desc,
+                                email: app.vue.user_email,
+                                review_count: response.data.updated.review_count,
+                                avg_rating: response.data.updated.avg_rating,
+                                avg_noise: response.data.updated.avg_noise,
+                                avg_people: response.data.updated.avg_people,
+                                avg_atmosphere: response.data.updated.avg_atmosphere,
+                                avg_cry: response.data.updated.avg_cry,
+                                tags: response.data.updated.tags,
+                                image: reader.result,
+                            });
+
+                            app.apply_filter();
+                            app.enumerate(app.vue.posts);
+                            app.reset_add_form();
+                            app.set_add_modal();
+                        });
+                        reader.readAsDataURL(app.file);
+                    });
+                }
             });
         });
     }
@@ -116,6 +137,25 @@ let init = (app) => {
         }
     }
 
+    app.select_file = function (event) {
+        // Reads the file.
+        let input = event.target;
+        app.file = input.files[0];
+        if (app.file) {
+            app.vue.selection_done = true;
+            // We read the file.
+            let reader = new FileReader();
+            reader.addEventListener("load", function () {
+                app.vue.image_url = reader.result;
+            });
+            reader.readAsDataURL(app.file);
+        }
+    };
+
+    app.upload_complete = function (file_name, file_type) {
+        app.vue.uploaded = true;
+    };
+
     // We form the dictionary of all methods, so we can assign them
     // to the Vue app in a single blow.
     app.methods = {
@@ -125,6 +165,7 @@ let init = (app) => {
         open_location: app.open_location,
         change_filter: app.change_filter,
         apply_filter: app.apply_filter,
+        select_file: app.select_file,
     };
 
     // This creates the Vue instance.

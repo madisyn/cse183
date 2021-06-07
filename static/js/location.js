@@ -29,11 +29,6 @@ let init = (app) => {
         reviews: [],
         filter: "top",
         helpful: [],
-        selection_done: false,
-        uploading: false,
-        uploaded_file: "",
-        uploaded: false,
-        image_url: "",
     };
 
     // This is the file selected for upload.
@@ -170,49 +165,6 @@ let init = (app) => {
         }
     }
 
-    app.select_file = function (event) {
-        // Reads the file.
-        let input = event.target;
-        app.file = input.files[0];
-        if (app.file) {
-            app.vue.selection_done = true;
-            // We read the file.
-            let reader = new FileReader();
-            reader.addEventListener("load", function () {
-                app.vue.image_url = reader.result;
-            });
-            reader.readAsDataURL(app.file);
-        }
-    };
-
-    app.upload_complete = function (file_name, file_type) {
-        app.vue.uploading = false;
-        app.vue.uploaded = true;
-    };
-
-    app.upload_file = function (event, review_idx) {
-        let input = event.target;
-        let file = input.files;
-        let review = app.vue.reviews[review_idx];
-        if (file) {
-            let reader = new FileReader();
-            reader.addEventListener("load", function () {
-                // Sends the image to the server.
-                axios.post(upload_image_url,
-                    {
-                        review_id: review.id,
-                        image: reader.result,
-                    })
-                    .then(function (response) {
-                        // Sets the local preview.
-                        review.image = reader.result;
-
-                    });
-            });
-            reader.readAsDataURL(file);
-        }
-    };
-
     // We form the dictionary of all methods, so we can assign them
     // to the Vue app in a single blow.
     app.methods = {
@@ -223,8 +175,6 @@ let init = (app) => {
         delete_review: app.delete_review,
         parse_date: app.parse_date,
         change_helpful: app.change_helpful,
-        select_file: app.select_file,
-        upload_file: app.upload_file,
     };
 
     // This creates the Vue instance.

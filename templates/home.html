@@ -79,6 +79,11 @@ p.review-preview {
 <div class="section" id="vue-target" v-cloak>
 
     <div class="container is-max-desktop">
+
+        <div class="block" v-if="test_image">
+            <img width="400" :src="test_image" />
+        </div>
+
         <!-- create button -->
         <button class="button is-info is-wide" @click="set_add_modal()">
             <span class="icon"><i class="fa fa-plus-circle"></i></span>
@@ -108,6 +113,29 @@ p.review-preview {
                                 <textarea class="textarea" placeholder="Describe how to find the location..." v-model="location_desc"></textarea>
                             </div>
                         </div>
+                        <!-- image upload -->
+                        <div v-if="!selection_done" class="field has-addons block">
+                            <p class="control">
+                                <div class="file is-info">
+                                    <label class="file-label">
+                                        <input class="file-input" type="file"
+                                                accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*"
+                                                @change="select_file($event)"
+                                        >
+                                        <span class="file-cta">
+                                            <span class="file-label">
+                                                <span>Upload Image</span>
+                                            </span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </p>
+                        </div>
+                        <template v-if="selection_done && !uploaded">
+                            <div class="block">
+                                <img width="400" :src="image_url" />
+                            </div>
+                        </template>
                         <h3>Your Review</h3>
                         <div class="field">
                             <div class="control">
@@ -226,7 +254,8 @@ p.review-preview {
             >
                 <div class="card-image">
                     <figure class="image is-square">
-                    <img src="https://images7.alphacoders.com/303/303995.jpg" alt="Placeholder image">
+                    <img v-if="!p.image" src="https://images7.alphacoders.com/303/303995.jpg" alt="Placeholder image">
+                    <img v-if="p.image" :src="test_image" alt="Placeholder image"/>
                     </figure>
                 </div>
                 <div class="card-stacked">
@@ -273,7 +302,8 @@ p.review-preview {
     let get_locations_url = "[[=XML(get_locations_url)]]";
     let delete_location_url = "[[=XML(delete_location_url)]]";
     let location_url = "[[=XML(location_url)]]";
-    let add_review_url = "[[=XML(add_review_url)]]"
+    let add_review_url = "[[=XML(add_review_url)]]";
+    let file_upload_url = "[[=XML(file_upload_url)]]";
 </script>
 <script src="js/index.js"></script>
 [[end]]
