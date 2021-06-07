@@ -26,6 +26,8 @@ let init = (app) => {
         noise_rating: 0,
         ppl_rating: 0,
         review_content: "",
+        err: false,
+        err_msg: "",
         reviews: [],
         filter: "top",
         helpful: [],
@@ -56,7 +58,31 @@ let init = (app) => {
         app.vue.review_content = "";
     }
 
+    app.rating_in_range = function (n) {
+        var num = parseInt(n, 10);
+        return Number.isInteger(num) && num >= 0 && num <= 5;
+    }
+
     app.add_review = function (event) {
+        // input sanitization
+        if (app.vue.review_content === "") {
+            console.log("first error");
+            app.vue.err = true;
+            app.vue.err_msg = "Fields cannot be empty";
+            return;
+        }
+        else if (!app.rating_in_range(app.vue.cry_rating)
+            || !app.rating_in_range(app.vue.atmos_rating)
+            || !app.rating_in_range(app.vue.noise_rating)
+            || !app.rating_in_range(app.vue.ppl_rating)) {
+            console.log("second error");
+            app.vue.err = true;
+            app.vue.err_msg = "Ratings must be integers in the range 0 to 5";
+            return;
+        }
+
+        // input is all validated
+        app.vue.err = false;
         axios.post(add_review_url,
             {
                 location: app.vue.loc_id,
@@ -88,7 +114,6 @@ let init = (app) => {
             app.vue.tags = response.data.updated.tags;
 
             app.apply_filter();
-            app.upload_file(event ,response.data.id);
             app.reset_add_form();
             app.set_add_modal();
         });
