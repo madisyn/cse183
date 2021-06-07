@@ -30,7 +30,7 @@ signup.js handles the form input and API call to the server to store the usernam
 
 This page uses Vue.js (static/js/index.js).
 
-The user can browse through existing posts, sort them by three filters (top, new, my posts), and create a new post. Users can also delete posts that were created by them.
+The user can browse through existing posts, sort them by three filters (top, new, my posts), and create a new post. Users can also delete posts that were created by them. For each location, users can see the average rating of the location, the number of reviews, and the tags associated with the post.
 
 index.js handles all the API calls to get locations, add locations, and delete locations. It also deals with the form input, resetting the form, and applying filters.
 
@@ -38,11 +38,9 @@ index.js handles all the API calls to get locations, add locations, and delete l
 
 This page uses Vue.js (static/js/location.js).
 
-The user can browse through the info of a location, the reviews of a location, sort them by three filters (top, new, my posts), and create a new review. Users can also delete reviews that were created by them, and mark reviews as "helpful".
+The user can browse through the info of a location, the reviews of a location, sort them by three filters (top, new, my posts), and create a new review. Users can also delete reviews that were created by them, and mark reviews as "helpful". The information about the location (average ratings and the number of reviews) should update automatically after the user posts a new review, or deletes a review.
 
 location.js handles all the API calls to get the location information, get reviews, add reviews, delete reviews, mark a post as helpful, and unmark a post as helpful. It also deals with the add review form, input validation, and applying filters.
-
-The information about the location (average ratings and the number of reviews) should update automatically after the user posts a new review, or deletes a review.
 
 #### Layout
 
