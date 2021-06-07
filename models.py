@@ -57,8 +57,6 @@ db.define_table(
     Field('cry_rating', 'integer', requires=IS_INT_IN_RANGE(0, 5)),
     Field('comment', 'string'),
     Field('helpful_count', 'integer', default=0),
-    Field('thumbnail', 'string'),
-    Field('image', 'string'),
     Field('date_posted', default=get_time),
     Field('username', default=get_username),
     Field('email', default=get_user_email),
