@@ -171,6 +171,11 @@
                     <button class="delete" aria-label="close" @click="set_add_modal()"></button>
                 </header>
                 <section class="modal-card-body">
+                    <!-- error message -->
+                    <article class="message is-danger" v-if="err">
+                        <div class="message-body">Error: {{err_msg}}</div>
+                    </article>
+                    <!-- content -->
                     <div class="content">
                         <div class="field">
                             <div class="control">

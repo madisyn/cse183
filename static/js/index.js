@@ -51,8 +51,9 @@ let init = (app) => {
         app.vue.review_content = "";
     }
 
-    app.rating_in_range = function (num) {
-        return isInteger(num) && num >= 0 && num <= 5;
+    app.rating_in_range = function (n) {
+        var num = parseInt(n, 10);
+        return Number.isInteger(num) && num >= 0 && num <= 5;
     }
 
     app.add_post = function () {
@@ -64,13 +65,13 @@ let init = (app) => {
             app.vue.err_msg = "Fields cannot be empty";
             return;
         }
-        else if (app.rating_in_range(app.vue.cry_rating)
-            || app.rating_in_range(app.vue.atmos_rating)
-            || app.rating_in_range(app.vue.noise_rating)
-            || app.rating_in_range(app.vue.ppl_rating)) {
-                app.vue.err = true;
-                app.vue.err_msg = "Ratings must be integers in the range 0 to 5";
-                return;
+        else if (!app.rating_in_range(app.vue.cry_rating)
+            || !app.rating_in_range(app.vue.atmos_rating)
+            || !app.rating_in_range(app.vue.noise_rating)
+            || !app.rating_in_range(app.vue.ppl_rating)) {
+            app.vue.err = true;
+            app.vue.err_msg = "Ratings must be integers in the range 0 to 5";
+            return;
         }
 
         // input is all validated
@@ -92,6 +93,7 @@ let init = (app) => {
                     comment: app.vue.review_content,
                 }).then(function (response) {
 
+                // image upload
                 if (app.file) {
                     let file_type = app.file.type;
                     let file_name = app.file.name;
@@ -126,6 +128,27 @@ let init = (app) => {
                         });
                         reader.readAsDataURL(app.file);
                     });
+                }
+                // no image upload
+                else {
+                    app.vue.posts.unshift({
+                        id: loc_response.data.id,
+                        name: app.vue.location_name,
+                        description: app.vue.location_desc,
+                        email: app.vue.user_email,
+                        review_count: response.data.updated.review_count,
+                        avg_rating: response.data.updated.avg_rating,
+                        avg_noise: response.data.updated.avg_noise,
+                        avg_people: response.data.updated.avg_people,
+                        avg_atmosphere: response.data.updated.avg_atmosphere,
+                        avg_cry: response.data.updated.avg_cry,
+                        tags: response.data.updated.tags,
+                    });
+
+                    app.apply_filter();
+                    app.enumerate(app.vue.posts);
+                    app.reset_add_form();
+                    app.set_add_modal();
                 }
             });
         });
