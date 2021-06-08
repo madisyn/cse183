@@ -130,4 +130,3 @@ This table stores which users have marked which reviews as helpful. It reference
 
 - image upload is not fully implemented
   - full documentation of the necessary implementation and attempted code is in the feature/gcs branch
-- the google sign-in page does not automatically redirect to the home page
