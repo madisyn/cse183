@@ -128,7 +128,8 @@ This table stores which users have marked which reviews as helpful. It reference
 
 ## Known Issues
 
-- location images are not implemented
+- **location images** are not implemented
   - each location should have their own image
   - the image should be displayed on the card in the home page and in the location page
   - full documentation of the necessary implementation and attempted code is in the feature/gcs branch
+- hitting the back button to go back to a home page or location page sometimes does not provide up to date info (users will have to refresh the page)
