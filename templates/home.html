@@ -114,24 +114,6 @@ p.review-preview {
                                 <textarea class="textarea" placeholder="Describe how to find the location..." v-model="location_desc"></textarea>
                             </div>
                         </div>
-                        <!-- image upload -->
-                        <div v-if="!selection_done" class="field has-addons block">
-                            <p class="control">
-                                <div class="file is-info">
-                                    <label class="file-label">
-                                        <input class="file-input" type="file"
-                                                accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*"
-                                                @change="select_file($event)"
-                                        >
-                                        <span class="file-cta">
-                                            <span class="file-label">
-                                                <span>Upload Image</span>
-                                            </span>
-                                        </span>
-                                    </label>
-                                </div>
-                            </p>
-                        </div>
                         <template v-if="selection_done && !uploaded">
                             <div class="block">
                                 <img width="400" :src="image_url" />
