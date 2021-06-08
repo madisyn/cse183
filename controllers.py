@@ -46,7 +46,7 @@ def index():
 @action.uses(url_signer, auth, 'home.html')
 def home():
     if get_user_email() is None:
-        redirect(URL('auth/plugin/oauth2google/login', vars=dict(next='/home')))
+        redirect(URL('auth/plugin/oauth2google/login', vars=dict(next='../../../home')))
     if get_username() is None:
         redirect(URL('signup'))
     return dict(
