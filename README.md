@@ -1,6 +1,5 @@
 # Weep
 Created by: Colina Guan and Madisyn Maldonado
-https://weep-project.appspot.com/
 
 ## Table of Contents
 
