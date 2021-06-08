@@ -128,5 +128,7 @@ This table stores which users have marked which reviews as helpful. It reference
 
 ## Known Issues
 
-- image upload is not fully implemented
+- location images are not implemented
+  - each location should have their own image
+  - the image should be displayed on the card in the home page and in the location page
   - full documentation of the necessary implementation and attempted code is in the feature/gcs branch
